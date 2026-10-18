@@ -1,0 +1,1972 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>데이빗토플 Quick Diagnostic Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<style>
+/* Layout: test-center shell. Dark navy top bar with section tabs, timer and progress; one task per screen in a centered column. */
+:root {
+  --bg: #EEF1F6; --surface: #FFFFFF; --surface2: #F5F7FB; --ink: #12203A; --muted: #5B6780; --line: #D6DCE8;
+  --accent: #1F4FD8; --accentInk: #FFFFFF; --bar: #12203A; --barInk: #FFFFFF;
+  --good: #0F7B45; --goodbg: #E3F4EA; --warn: #B45309; --warnbg: #FDF0DC; --bad: #B3261E; --badbg: #FBE6E4;
+  --font-body: "IBM Plex Sans KR", system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0C1220; --surface: #151D30; --surface2: #1B2540; --ink: #E6EBF5; --muted: #9AA6BF; --line: #2B3753;
+    --accent: #7FA2FF; --accentInk: #0C1220; --bar: #0A0F1B; --barInk: #E6EBF5;
+    --good: #5FD39A; --goodbg: #123222; --warn: #F0A54A; --warnbg: #3A2A10; --bad: #FF8C84; --badbg: #3C1A18;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0C1220; --surface: #151D30; --surface2: #1B2540; --ink: #E6EBF5; --muted: #9AA6BF; --line: #2B3753;
+  --accent: #7FA2FF; --accentInk: #0C1220; --bar: #0A0F1B; --barInk: #E6EBF5;
+  --good: #5FD39A; --goodbg: #123222; --warn: #F0A54A; --warnbg: #3A2A10; --bad: #FF8C84; --badbg: #3C1A18;
+  color-scheme: dark;
+}
+html, body { background: var(--bg); color: var(--ink); font-family: var(--font-body); }
+body { font-size: 15px; line-height: 1.6; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.passage { font-size: 15.5px; line-height: 1.75; }
+textarea, input[type="text"] { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; font-family: var(--font-body); }
+textarea:focus, input[type="text"]:focus, button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .65rem 1.25rem; border-radius: 6px; font-weight: 600; background: var(--accent); color: var(--accentInk); border: 1px solid var(--accent); cursor: pointer; transition: opacity .15s; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.opt { display: flex; gap: .75rem; align-items: flex-start; width: 100%; text-align: left; padding: .65rem .85rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); cursor: pointer; }
+.opt:hover { border-color: var(--accent); }
+.opt[aria-checked="true"] { border-color: var(--accent); background: var(--surface2); box-shadow: inset 0 0 0 1px var(--accent); }
+.dot { flex: none; width: 18px; height: 18px; margin-top: 3px; border-radius: 50%; border: 2px solid var(--muted); }
+.opt[aria-checked="true"] .dot { border-color: var(--accent); background: radial-gradient(var(--accent) 45%, transparent 50%); }
+.blank { width: 3.2em; text-align: center; padding: 0 .1em; border: 0 !important; border-bottom: 2px solid var(--accent) !important; border-radius: 0 !important; background: var(--surface2) !important; font-family: var(--font-mono); }
+.blank::placeholder { color: var(--muted); letter-spacing: .2em; opacity: 1; }
+.blank { letter-spacing: .15em; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+.rec { animation: pulse 1s infinite; }
+@keyframes wave { 0%,100% { height: 20% } 50% { height: 100% } }
+.wavebar { width: 5px; border-radius: 3px; background: var(--accent); animation: wave 0.9s ease-in-out infinite; }
+.end-btn { font-size: 12px; font-weight: 600; padding: .3rem .7rem; border-radius: 6px; border: 1px solid rgba(255,255,255,.45); background: transparent; color: inherit; cursor: pointer; }
+.end-btn:hover { background: rgba(255,255,255,.14); }
+.modal-back { position: fixed; inset: 0; z-index: 50; background: rgba(8,12,22,.6); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.modal { width: 100%; max-width: 420px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 20px; box-shadow: 0 12px 40px rgba(0,0,0,.35); }
+@media (prefers-reduced-motion: reduce) { .rec, .wavebar { animation: none; } }
+@media print { body.pf-mode .rr > *:not(#pf) { display: none !important; } body.pf-mode .teacher-bar, body.pf-mode .pf-actions { display: none !important; } body.pf-mode { background: #fff; } details:not([open]) > *:not(summary) { display: block; } }
+</style>
+
+<div id="root"></div>
+
+<script>
+tailwind.config = { theme: { extend: {
+  colors: { bg:'var(--bg)', surface:'var(--surface)', surface2:'var(--surface2)', ink:'var(--ink)', muted:'var(--muted)', line:'var(--line)',
+    accent:'var(--accent)', accentInk:'var(--accentInk)', bar:'var(--bar)', barInk:'var(--barInk)', good:'var(--good)', goodbg:'var(--goodbg)',
+    warn:'var(--warn)', warnbg:'var(--warnbg)', bad:'var(--bad)', badbg:'var(--badbg)' },
+  fontFamily: { sans: ['IBM Plex Sans KR','system-ui','sans-serif'] }
+} } };
+</script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useCallback, useMemo, createContext, useContext } = React;
+
+/* ============ CONFIG ============ */
+// ▼ 선생님 전용 설정 ▼ ------------------------------------------------------------
+// 결과 전송: https://web3forms.com 에서 선생님 이메일을 입력하면 'Access Key'가 메일로 옵니다.
+// 그 키를 아래 따옴표 안에 붙여 넣으면, 학생이 시험을 끝낼 때 결과가 선생님 이메일로만 전송됩니다.
+// (키를 비워 두면 전송되지 않고, 학생 화면에 '결과 코드'가 나와 수동으로 받는 방식이 됩니다.)
+const WEB3FORMS_KEY = "ae00f0e9-f7b7-47a8-b5e2-b9b48e0c6d39";
+// 응시 완료 화면의 버튼 링크
+const LINKTREE_URL = "https://linktr.ee/david.toefl_official";
+// ---------------------------------------------------------------------------------
+const LR_SECONDS = 10, INTERVIEW_SECONDS = 45, EMAIL_SECONDS = 7 * 60, DISCUSSION_SECONDS = 10 * 60;
+const READING_SECONDS = 8 * 60, LISTENING_SECONDS = 7 * 60;
+
+/* 시험 중 '시험 종료' 버튼이 현재 영역의 작성 중인 답안을 가져오는 통로 */
+const LIVE = { get: null };
+const SPK_CUR = { get: null };
+function useLive(fn) {
+  const ref = useRef(fn); ref.current = fn;
+  useEffect(() => { const g = () => ref.current(); LIVE.get = g; return () => { if (LIVE.get === g) LIVE.get = null; }; }, []);
+}
+
+/* ============ DATA (데이빗토플 모의고사 세트에서만 발췌 · 응시할 때마다 영역별 무작위) ============ */
+const R_SET1 = [
+  { id: "ctw", kind: "ctw", title: "Complete the Words", instr: "Fill in the missing letters in the paragraph.",
+    parts: [
+      "Cities were once thought to be host", { b: "ile" }, " environments for wildlife, but many species have lea", { b: "rned" },
+      " to thrive amid traffic, noise, and concrete surfaces. Foxes, raccoons, and certain birds now tr", { b: "eat" },
+      " urban areas as reliable habitats rather th", { b: "an" }, " obstacles to survival. Scientists bel", { b: "ieve" },
+      " this shift is dri", { b: "ven" }, " by steady access to food waste and few", { b: "er" },
+      " natural predators. Adapting to city life, how", { b: "ever" },
+      ", is not without cost. Urban animals often show altered sleep patterns, and some spec", { b: "ies" },
+      " have grown bolder, losing their natural caution around humans. This boldness can lead to dangerous encounters, including collisions w", { b: "ith" }, " vehicles."
+    ], src: "데이빗토플 Reading Practice Set 1" },
+  { id: "daily", kind: "mcq", title: "Read in Daily Life", instr: "Read a notice.",
+    passage: "Riverside Public Library\nIntroducing Instant E-Book Checkout\n\nSkip the wait list for select titles! With Instant Checkout, eligible e-books and audiobooks can be borrowed immediately, any time of day. Download the Riverside Library app, search for titles marked with the lightning bolt icon, and tap 'Borrow Now.' No hold requests needed.",
+    qs: [
+      { q: "What type of institution issued the notice?", o: ["An audiobook publisher", "A public library", "A bookstore", "A mobile app developer"], a: 1, skill: "Main idea / context" },
+      { q: "How can patrons identify books available for instant checkout?", o: ["By joining a waiting list", "By checking the library's printed catalog", "By calling the library front desk", "By looking for a specific icon in the app"], a: 3, skill: "Scanning for details" }
+    ], src: "데이빗토플 Reading Practice Set 1" },
+  { id: "acad", kind: "mcq", title: "Read an Academic Passage", instr: "Read the passage and answer the questions.",
+    passage: "The Bystander Effect\n\nIn 1964, a young woman named Kitty Genovese was attacked outside her apartment building in New York City while, according to later reports, numerous neighbors heard her cries for help. The case, though its details were later disputed, prompted psychologists to investigate why individuals sometimes fail to intervene when they witness someone in distress. This phenomenon became known as the bystander effect.\n\nResearchers John Darley and Bibb Latané proposed that the presence of other people can actually reduce the likelihood that any single individual will offer help. They termed this diffusion of responsibility: when multiple witnesses are present, each person assumes that someone else will act, and personal responsibility becomes diluted across the group. In controlled experiments, participants who believed they were the only witness to an emergency responded quickly, while those who believed several others were also aware of the situation were slower to respond, or did not respond at all.\n\nThe bystander effect is not simply a matter of indifference. Psychologists have identified additional factors, such as pluralistic ignorance, in which bystanders look to others' reactions to determine whether a situation is truly an emergency. If everyone appears calm, individuals may conclude, often incorrectly, that intervention is unnecessary. Ambiguity about the situation, along with fear of embarrassment or of misjudging the circumstances, further discourages action.\n\nUnderstanding the bystander effect has practical implications. Some safety training programs now teach a technique called directed helping, in which a witness singles out one specific bystander and assigns them a task, such as calling emergency services. By eliminating the ambiguity of who is responsible, this strategy has been shown to increase the likelihood that help will actually be provided.",
+    qs: [
+      { q: "What is the passage mainly about?", o: ["Techniques used in psychological experiments.", "The history of emergency response training.", "Psychological factors that inhibit people from helping others in emergencies", "The murder of Kitty Genovese."], a: 2, skill: "Main idea" },
+      { q: "Why does the author mention \"directed helping\"?", o: ["To describe a strategy that reduces the ambiguity responsible for the bystander effect", "To compare it with pluralistic ignorance.", "To argue that bystander intervention cannot be taught", "To criticize modern safety training programs."], a: 0, skill: "Rhetorical purpose" }
+    ], src: "데이빗토플 Reading Practice Set 1" }
+];
+
+const L_SET4 = [
+  { id: "resp1", title: "Listen and Choose a Response", instr: "Listen, then choose the best response.", lines: [{ t: "Did you end up going to the concert last night?", who: "W" }],
+    qs: [{ q: "Choose the best response.", o: ["I bought two tickets.", "The venue is downtown.", "It starts at eight.", "Yeah, it was amazing."], a: 3, skill: "Socially appropriate response" }], src: "데이빗토플 Listening Practice Set 4" },
+  { id: "resp2", title: "Listen and Choose a Response", instr: "Listen, then choose the best response.", lines: [{ t: "Do you know if this medication needs to be taken with food?", who: "M" }],
+    qs: [{ q: "Choose the best response.", o: ["The pharmacy closes at six.", "It's a generic brand.", "I'm not sure, let's check the label.", "I take vitamins every morning."], a: 2, skill: "Socially appropriate response" }], src: "데이빗토플 Listening Practice Set 4" },
+  { id: "conv", title: "Listen to a Conversation", instr: "Listen to a conversation.", lines: [
+      { t: "Hey, I was looking at the electricity bill, and it's way higher than last month.", who: "W" }, { t: "Really? We haven't really changed our usage much.", who: "M" },
+      { t: "I think it might be the space heater you've been running in your room.", who: "W" }, { t: "Oh, that's probably it. I'll unplug it when I'm not in the room from now on.", who: "M" },
+      { t: "Thanks, that should help. Let's also split this month's bill evenly like always.", who: "W" }, { t: "Sounds good, just send me the amount.", who: "M" }],
+    qs: [
+      { q: "What problem does the woman bring up?", o: ["An unexpected late payment fee", "A simple billing error", "A higher than usual electricity bill", "A heater that suddenly broke"], a: 2, skill: "Main idea" },
+      { q: "What does the man agree to do?", o: ["Just move out of the apartment", "Go buy a brand new heater", "Unplug the space heater when not in his room", "Simply pay the entire bill himself"], a: 2, skill: "Detail" }
+    ], src: "데이빗토플 Listening Practice Set 4" },
+  { id: "ann", title: "Listen to an Announcement", instr: "Listen to an announcement in a gym.", lines: [{ t: "Attention members: The pool will be closed for routine maintenance this Wednesday from 6 AM to 12 PM. All other facilities, including the weight room and group fitness studios, will remain open on their normal schedule. We appreciate your understanding and look forward to reopening the pool by early afternoon.", who: "M" }],
+    qs: [{ q: "What will be closed on Wednesday morning?", o: ["The entire gym", "The pool", "The weight room", "The group fitness studios"], a: 1, skill: "Detail" }], src: "데이빗토플 Listening Practice Set 4" },
+  { id: "talk", title: "Listen to an Academic Talk", instr: "Listen to a talk on a podcast about psychology.", lines: [
+      { t: "In a well-known experiment conducted in the 1960s, researchers told elementary school teachers that certain students in their classrooms, identified through a supposed aptitude test, were expected to show unusual intellectual growth over the coming year. In reality, these students had been chosen completely at random, with no connection to their actual test scores. Yet by the end of the year, the randomly selected students showed significantly greater gains in academic performance than their classmates.", who: "W" },
+      { t: "This outcome illustrates what psychologists call the Pygmalion effect: the phenomenon in which higher expectations placed on a person can lead to genuinely improved performance, even when those expectations have no objective basis. In the classroom study, teachers unknowingly treated the supposedly gifted students differently, offering them more encouragement, more challenging material, and more opportunities to participate.", who: "W" },
+      { t: "The Pygmalion effect carries implications well beyond classrooms. In workplaces, managers who hold higher expectations for certain employees often unknowingly provide them with better mentorship and more valuable assignments, contributing to that employee's eventual success.", who: "W" }],
+    qs: [
+      { q: "What is the main topic of the talk?", o: ["A general method for identifying gifted students", "A phenomenon in which higher expectations can lead to genuinely improved performance", "A brief history of intelligence testing", "Practical techniques for improving teacher training programs"], a: 1, skill: "Main idea" },
+      { q: "Why does the speaker mention workplace managers?", o: ["To directly compare teachers and managers", "To argue that mentorship programs are largely ineffective", "To criticize how workplace promotions are typically decided", "To extend the Pygmalion effect to a context beyond classrooms"], a: 3, skill: "Rhetorical purpose" }
+    ], src: "데이빗토플 Listening Practice Set 4" }
+];
+
+const S_LR4 = {
+  scenario: "You are training new docents at a science museum. Listen to the head docent and repeat what she says. Repeat only once.",
+  lines: [
+    "Welcome to the science museum docent training.",
+    "The dinosaur exhibit is on the second floor, past the gift shop.",
+    "Interactive demonstrations run every thirty minutes in the main hall.",
+    "Please remind children not to climb on the display cases.",
+    "Wheelchairs are available to borrow at the front desk.",
+    "We host a stargazing night on the last Friday of each month.",
+    "If any equipment malfunctions, notify a staff member right away."
+  ], src: "데이빗토플 Speaking Practice Set 4"
+};
+const S_IV4 = {
+  scenario: "You have agreed to take part in a research study about stress management. You will have a short online interview with a researcher. The researcher will ask you some questions.",
+  qs: [
+    "Thank you for joining me today. I'm conducting a study about how people manage stress in their daily lives. To start, how do you typically cope with stress in your daily life?",
+    "Great. Some people prefer to talk to others about their stress, while others prefer to deal with it alone. What is your approach, and why do you think you handle stress this way?",
+    "Interesting. Next, I'd like your opinion. Some people believe that regular exercise is the most effective way to manage stress, while others think mental techniques like meditation are more effective. Do you agree that physical exercise is more effective than mental techniques for managing stress? Why or why not?",
+    "Good points. One final question. Do you think employers should be required to provide stress management resources, such as counseling or wellness programs, for their employees? Why or why not?"
+  ], src: "데이빗토플 Speaking Practice Set 4"
+};
+const W_EMAIL5 = {
+  scenario: "You were recently invited to speak as a guest lecturer at a local university's business seminar. You would like to accept the invitation, but you have a few follow-up questions before confirming.",
+  bullets: ["Thank the organizer for the invitation and mention what appeals to you about it.", "Confirm that you would like to accept.", "Ask one or two follow-up questions about the event."],
+  to: "events@northfieldbusinessschool.edu", subject: "Re: Guest Lecture Invitation – Confirming and a Few Questions", src: "데이빗토플 Writing Practice Set 5"
+};
+const W_DISC5 = {
+  intro: "Your professor is teaching a class on journalism ethics. Write a post responding to the professor's question.",
+  prof: "This week we're discussing journalism ethics. Some argue that allowing journalists to use anonymous sources is essential for uncovering important stories, especially when sources fear retaliation. Others argue that anonymous sourcing reduces accountability and can allow inaccurate information to spread without consequence. Do you think news organizations should be allowed to use anonymous sources in their reporting? Why or why not?",
+  s1: ["Grace", "I think anonymous sources should be allowed. Some of the most important investigative stories in history, including major government scandals, would never have come to light without whistleblowers who could only speak anonymously out of fear of losing their jobs or facing legal consequences."],
+  s2: ["Marcus", "I see Grace's point, but I think anonymous sourcing should be limited to serious cases, not used casually. When anyone can be quoted anonymously, it becomes much easier for false or exaggerated claims to spread, since no one can be held personally accountable for what was said."],
+  src: "데이빗토플 Writing Practice Set 5"
+};
+
+/* ============ 추가 세트 (모의고사 Set 2/3 · Listening Set 5/6 · Speaking Set 5/6 · Writing Set 6/7) ============ */
+const R_SET2 = [
+  { id: "ctw", kind: "ctw", title: "Complete the Words", instr: "Fill in the missing letters in the paragraph.",
+    parts: [
+      "Bioluminescence is the abil", { b: "ity" }, " of certain living organisms to produce their own light through a chem", { b: "ical" },
+      " reaction inside their bodies. This phenom", { b: "enon" }, " occurs in a wide variety of spec", { b: "ies" },
+      ", including fireflies, jellyfish, and certain species of deep-sea fish. Scientists believe that bioluminescence evolved independ", { b: "ently" },
+      " many times throughout history, since organisms use it for striking", { b: "ly" }, " different purposes. Some creatures rely on their glow to attr", { b: "act" },
+      " mates, while others use it to lure prey or startle potential preda", { b: "tors" }, ". In the deep ocean, where sunlight cannot penet", { b: "rate" },
+      ", bioluminescence provides one of the only sources of light, making it essen", { b: "tial" }, " to survival for many species."
+    ], src: "데이빗토플 Reading Practice Set 2" },
+  { id: "daily", kind: "mcq", title: "Read in Daily Life", instr: "Read a notice.",
+    passage: "Parkview Apartments\nElevator Maintenance Notice\n\nThe elevator in Building C will be out of service from Monday, March 3rd through Wednesday, March 5th for scheduled maintenance. Residents on floors 4 and above are encouraged to use the stairwell near the mailroom during this time. We apologize for any inconvenience and appreciate your patience.",
+    qs: [
+      { q: "What is the purpose of the notice?", o: ["To advertise a renovation project", "To report a safety violation", "To announce a new resident policy", "To inform residents about elevator maintenance"], a: 3, skill: "Main idea / context" },
+      { q: "What are residents on higher floors advised to do?", o: ["Use the stairwell near the mailroom", "Contact building management", "Move to a different building temporarily", "Avoid leaving their apartments"], a: 0, skill: "Scanning for details" }
+    ], src: "데이빗토플 Reading Practice Set 2" },
+  { id: "acad", kind: "mcq", title: "Read an Academic Passage", instr: "Read the passage and answer the questions.",
+    passage: "The Spacing Effect\n\nAnyone who has crammed for an exam the night before is familiar with a common experience: information that felt solid at 2 a.m. often seems to evaporate within days. Cognitive psychologists have long studied why some learning sticks while other learning fades quickly, and one of the most well-established findings is known as the spacing effect.\n\nThe spacing effect refers to the observation that people retain information more effectively when their study sessions are spread out over time, rather than concentrated into a single, intensive session. In a classic set of experiments, researchers compared groups of learners who studied the same material either in one long session or in several shorter sessions spread across days or weeks. Consistently, the groups who spaced out their study performed better on later memory tests, even though both groups spent the same total amount of time studying.\n\nOne explanation for this effect involves the process of forgetting itself. When a learner revisits information after a delay, they must work harder to retrieve it from memory, since some forgetting has already occurred. This effortful retrieval appears to strengthen the memory more than simply reviewing information while it is still fresh. In a sense, a small amount of forgetting between study sessions actually makes the following review more valuable.\n\nDespite strong evidence for the spacing effect, many students continue to rely on massed practice, or cramming, when preparing for exams. Researchers suggest this may be because cramming produces a feeling of fluency, since the material feels familiar immediately after review. This immediate sense of mastery can be misleading, however, since it often does not translate into long-term retention. Educators have increasingly promoted spaced repetition systems, which schedule review sessions at gradually increasing intervals, as a practical way to apply the spacing effect to everyday studying.",
+    qs: [
+      { q: "What is the passage mainly about?", o: ["A well-documented phenomenon in which spaced study improves long-term retention", "How forgetting can be completely eliminated.", "The history of memory research.", "Why cramming is more efficient than spaced study."], a: 0, skill: "Main idea" },
+      { q: "Why does the author mention spaced repetition systems?", o: ["To argue that spacing is less effective than previously believed", "To criticize technology-based learning tools", "To describe a practical method of applying the spacing effect", "To compare different memory disorders"], a: 2, skill: "Rhetorical purpose" }
+    ], src: "데이빗토플 Reading Practice Set 2" }
+];
+const R_SET3 = [
+  { id: "ctw", kind: "ctw", title: "Complete the Words", instr: "Fill in the missing letters in the paragraph.",
+    parts: [
+      "Bats navigate and hunt in complete darkness using a remark", { b: "able" }, " biolog", { b: "ical" },
+      " sonar system known as echolocation. As a bat flies, it emits a rapid sequ", { b: "ence" }, " of high-frequ", { b: "ency" },
+      " sound pulses, most of which are far bey", { b: "ond" }, " the range of human hearing. When these sound waves strike an object, such as a flying insect or a tree branch, they boun", { b: "ce" },
+      " back to the bat's ears as an echo. By analyzing the timing, inten", { b: "sity" }, ", and pitch of the returning echoes, a bat can construct an extraord", { b: "inarily" },
+      " detailed picture of its surround", { b: "ings" }, ", including the size, shape, texture, and even the speed of nearby objects. This ability allows bats to pursue errat", { b: "ically" },
+      " moving prey at high speed while avoiding obstacles in total darkness."
+    ], src: "데이빗토플 Reading Practice Set 3" },
+  { id: "daily", kind: "mcq", title: "Read in Daily Life", instr: "Read a notice.",
+    passage: "Grantham Museum of Art\nSpecial Exhibition Notice\n\nBeginning June 1st, entry to the 'Modern Visions' exhibition on the third floor will require a separate timed-entry ticket, available at the front desk or online. General museum admission does not include access to this exhibition. Timed tickets are limited to 30 visitors per hour to preserve a comfortable viewing experience.",
+    qs: [
+      { q: "What is required to enter the 'Modern Visions' exhibition?", o: ["A student ID", "A separate timed-entry ticket", "A guided tour reservation", "A membership card"], a: 1, skill: "Main idea / context" },
+      { q: "Why are ticket numbers limited each hour?", o: ["To allow time for cleaning", "To reduce noise in the museum", "To comply with a city ordinance", "To preserve a comfortable viewing experience"], a: 3, skill: "Scanning for details" }
+    ], src: "데이빗토플 Reading Practice Set 3" },
+  { id: "acad", kind: "mcq", title: "Read an Academic Passage", instr: "Read the passage and answer the questions.",
+    passage: "The Framing Effect\n\nImagine two doctors describing the same surgical procedure to a patient. One says the procedure has a 90 percent survival rate; the other says it has a 10 percent mortality rate. The statistics are identical, yet patients presented with the first description are consistently more likely to consent to surgery than those presented with the second. This discrepancy illustrates a well-documented cognitive bias known as the framing effect: the tendency for people to react differently to the same information depending on how it is presented, or \"framed.\"\n\nThe framing effect was first rigorously documented by psychologists Amos Tversky and Daniel Kahneman in a series of experiments during the late 1970s and early 1980s. In one influential study, participants were presented with a hypothetical public health scenario involving a disease expected to kill 600 people. When a treatment option was framed in terms of lives saved, most participants chose the safer, more certain option. When the identical option was reframed in terms of lives lost, participants became far more willing to gamble on a riskier alternative, even though the underlying outcomes were mathematically the same.\n\nResearchers explain this pattern using prospect theory, which suggests that people evaluate outcomes relative to a reference point rather than in absolute terms, and that they weigh potential losses more heavily than equivalent potential gains. When information is framed around losses, this heightened sensitivity to loss can push people toward riskier choices in an attempt to avoid a negative outcome altogether.\n\nThe framing effect carries significant real-world consequences, particularly in medicine, law, and public policy, where the same factual information can lead to dramatically different decisions depending on its presentation. Recognizing this bias has led some institutions to adopt standardized, neutrally framed language when communicating risk, in an effort to help people make decisions based on substance rather than presentation.",
+    qs: [
+      { q: "What is the passage mainly about?", o: ["How doctors decide which treatments to recommend", "Why patients often distrust medical statistics", "A cognitive bias in which identical information leads to different decisions depending on how it is presented", "The history of statistical methods in medicine"], a: 2, skill: "Main idea" },
+      { q: "Why does the author mention standardized, neutrally framed language?", o: ["To describe a practical response to the framing effect", "To criticize institutions for avoiding the topic of risk", "To argue that framing effects cannot be avoided", "To compare different medical communication styles"], a: 0, skill: "Rhetorical purpose" }
+    ], src: "데이빗토플 Reading Practice Set 3" }
+];
+
+const L_SET5 = [
+  { id: "resp1", title: "Listen and Choose a Response", instr: "Listen, then choose the best response.", lines: [{ t: "Could you review my resume before I submit it?", who: "M" }],
+    qs: [{ q: "Choose the best response.", o: ["The job posting is still open, actually.", "Of course, send it whenever you're ready.", "I already submitted mine yesterday.", "Resumes should be one page long."], a: 1, skill: "Socially appropriate response" }], src: "데이빗토플 Listening Practice Set 5" },
+  { id: "resp2", title: "Listen and Choose a Response", instr: "Listen, then choose the best response.", lines: [{ t: "Why did you decide to learn woodworking?", who: "W" }],
+    qs: [{ q: "Choose the best response.", o: ["I actually took a class last year.", "My uncle actually has a workshop.", "Woodworking tools can be pretty expensive.", "I wanted a hands-on hobby away from screens."], a: 3, skill: "Socially appropriate response" }], src: "데이빗토플 Listening Practice Set 5" },
+  { id: "conv", title: "Listen to a Conversation", instr: "Listen to a conversation.", lines: [
+      { t: "I think we should finally replace that old couch in the living room.", who: "M" }, { t: "I agree, it's falling apart. Do you have a budget in mind?", who: "W" },
+      { t: "I was thinking somewhere around $400, split evenly between us.", who: "M" }, { t: "That works for me. Should we look online first, or go check out a few stores this weekend?", who: "W" },
+      { t: "Let's browse online first so we have an idea of styles and prices before we go anywhere.", who: "M" }],
+    qs: [
+      { q: "What are the speakers planning to do?", o: ["Repair their current couch", "Replace their old couch", "Move to a new apartment", "Sell some furniture"], a: 1, skill: "Main idea" },
+      { q: "What will they do first?", o: ["Ask a friend for advice", "Set a firm budget", "Visit furniture stores", "Browse online"], a: 3, skill: "Detail" }
+    ], src: "데이빗토플 Listening Practice Set 5" },
+  { id: "ann", title: "Listen to an Announcement", instr: "Listen to an announcement at a movie theater.", lines: [{ t: "Attention moviegoers: Due to a technical issue with the projector in Theater 4, the 7:15 showing has been moved to Theater 6, just down the hall. Please check the screen near the entrance for the updated showtime board. We apologize for the inconvenience and will offer a complimentary popcorn voucher to affected ticket holders.", who: "M" }],
+    qs: [{ q: "Why was the showing moved to a different theater?", o: ["There was a technical issue with the projector.", "Theater 4 was apparently overbooked.", "The film was suddenly recalled.", "Theater 4 is simply being cleaned."], a: 0, skill: "Detail" }], src: "데이빗토플 Listening Practice Set 5" },
+  { id: "talk", title: "Listen to an Academic Talk", instr: "Listen to a talk on a podcast about psychology.", lines: [
+      { t: "Have you ever met someone attractive and, within seconds, found yourself assuming they were also intelligent, kind, and successful, all without any actual evidence? This tendency is known to psychologists as the halo effect: the phenomenon in which a single positive trait, such as physical attractiveness, unconsciously influences our overall impression of a person, causing us to assume they possess other positive qualities as well.", who: "W" },
+      { t: "The term was first introduced by psychologist Edward Thorndike in the early twentieth century, after he asked military officers to rate soldiers on a range of separate qualities, including physical appearance, intelligence, and leadership ability. Thorndike found that officers who rated a soldier highly on one trait tended to rate that same soldier highly across nearly every other trait, even when there was no logical connection between them, such as between physical posture and honesty.", who: "W" },
+      { t: "Researchers believe the halo effect persists because our brains prefer a simple, coherent impression of a person rather than a complicated, mixed one. Once we form an initial positive judgment, maintaining a consistent, uniformly positive picture requires less mental effort than holding conflicting impressions simultaneously, so we unconsciously adjust our perception of unrelated traits to match our first impression.", who: "W" }],
+    qs: [
+      { q: "What is the main topic of the talk?", o: ["Practical techniques for conducting job interviews, used across many different professional settings", "A brief history of military leadership evaluations, tracing its origins back several decades", "A bias in which one positive trait influences our overall impression of a person", "General tips on how to make a good first impression"], a: 2, skill: "Main idea" },
+      { q: "Why does the speaker say the halo effect persists?", o: ["Because maintaining a simple, consistent impression takes less mental effort", "Because it apparently only affects a small number of people", "Because it is explicitly taught in most professional training", "Because people deliberately and consciously favor attractive individuals"], a: 0, skill: "Detail / explanation" }
+    ], src: "데이빗토플 Listening Practice Set 5" }
+];
+const L_SET6 = [
+  { id: "resp1", title: "Listen and Choose a Response", instr: "Listen, then choose the best response.", lines: [{ t: "I heard you switched to a standing desk.", who: "W" }],
+    qs: [{ q: "Choose the best response.", o: ["The desk was expensive.", "Yes, my back feels much better.", "Standing desks are trending.", "I sit most of the day."], a: 1, skill: "Socially appropriate response" }], src: "데이빗토플 Listening Practice Set 6" },
+  { id: "resp2", title: "Listen and Choose a Response", instr: "Listen, then choose the best response.", lines: [{ t: "Do you think we should upgrade our internet plan?", who: "M" }],
+    qs: [{ q: "Choose the best response.", o: ["Internet prices vary by provider.", "We switched providers last year.", "The current plan is quite old.", "Probably, streaming has been lagging lately."], a: 3, skill: "Socially appropriate response" }], src: "데이빗토플 Listening Practice Set 6" },
+  { id: "conv", title: "Listen to a Conversation", instr: "Listen to a conversation.", lines: [
+      { t: "Hi, I'd like to get my bike tuned up before a big ride this weekend.", who: "M" }, { t: "Sure, we can do a full tune-up. It usually takes about two hours if you can leave it with us.", who: "W" },
+      { t: "That works. Is there anything I should mention about the bike beforehand?", who: "M" }, { t: "Just let us know if the brakes have felt off or if the gears have been slipping, so we can focus on those areas.", who: "W" }],
+    qs: [
+      { q: "Why does the man bring his bike to the shop?", o: ["Just to sell it quickly", "To buy a brand new bike", "To get a tune-up before a ride", "To report a recently stolen bike"], a: 2, skill: "Main idea" },
+      { q: "What does the woman ask the man to mention?", o: ["Any issues with the brakes or gears", "Only the bike's original price", "Mostly his riding schedule", "Simply the bike's purchase date"], a: 0, skill: "Detail" }
+    ], src: "데이빗토플 Listening Practice Set 6" },
+  { id: "ann", title: "Listen to an Announcement", instr: "Listen to an announcement at a community center.", lines: [{ t: "Attention visitors: The community center's main gymnasium will be unavailable this afternoon from 1 to 4 PM for a private event. The walking track on the upper level will remain open and accessible via the east staircase during this time. We apologize for any inconvenience this may cause to your regular schedule.", who: "W" }],
+    qs: [{ q: "Why is the gymnasium unavailable this afternoon?", o: ["For equipment repairs", "For cleaning", "For a staff meeting", "For a private event"], a: 3, skill: "Detail" }], src: "데이빗토플 Listening Practice Set 6" },
+  { id: "talk", title: "Listen to an Academic Talk", instr: "Listen to a talk on a podcast about psychology.", lines: [
+      { t: "Have you ever worked on a group project and noticed that your individual effort seemed to decrease as the size of the group grew? This is a well-documented phenomenon psychologists call social loafing: the tendency for individuals to exert less effort when working collectively as part of a group than when working alone on the same task.", who: "M" },
+      { t: "The effect was first documented in the late 1800s by a French agricultural engineer named Max Ringelmann, who asked groups of varying sizes to pull on a rope and measured the total force generated. Ringelmann found that as group size increased, the average individual contribution per person actually decreased, even though participants reported believing they were pulling just as hard as always.", who: "M" },
+      { t: "Researchers have proposed several explanations for this pattern. One major factor is reduced individual accountability: when effort is combined into a single group output, it becomes difficult to identify exactly how much any single person contributed, which can reduce the personal motivation to work at full capacity. Another contributing factor is the perception that one's individual effort is less essential when many other people are also contributing to the same outcome, sometimes called the “sucker effect,” in which people reduce their effort to avoid feeling exploited by less effortful teammates.", who: "M" }],
+    qs: [
+      { q: "What is the main topic of the talk?", o: ["A tendency for individuals to exert less effort in a group than when working alone", "A brief history of agricultural research methods, including its major developments over time", "Practical techniques for building stronger team rope-pulling ability, commonly recommended by teachers and coaches alike", "The general way to measure physical strength in groups, based on a combination of several factors"], a: 0, skill: "Main idea" },
+      { q: "According to the speaker, what is the “sucker effect”?", o: ["Working harder specifically to impress teammates", "An increase in motivation caused by competition", "Reducing one's effort to avoid feeling exploited by less effortful teammates", "A tendency to blame others for group failure"], a: 2, skill: "Detail / definition" }
+    ], src: "데이빗토플 Listening Practice Set 6" }
+];
+
+const S_LR5 = {
+  scenario: "You are training new staff at a mountain ski resort. Listen to the head trainer and repeat what she says. Repeat only once.",
+  lines: [
+    "Welcome to the mountain resort staff orientation.",
+    "The beginner slopes are located to the right of the main lodge.",
+    "Equipment rentals are available on the lower level of the lodge.",
+    "Please remind guests to wear a helmet at all times on the slopes.",
+    "Lift tickets can be upgraded at any ticket window during the day.",
+    "We offer a free guided tour for first-time visitors every morning at nine.",
+    "If a guest is injured, radio the ski patrol immediately."
+  ], src: "데이빗토플 Speaking Practice Set 5"
+};
+const S_IV5 = {
+  scenario: "You have agreed to take part in a research study about saving and spending habits. You will have a short online interview with a researcher. The researcher will ask you some questions.",
+  qs: [
+    "Thank you for joining me today. I'm conducting a study about how people manage their money. To start, would you describe yourself as more of a saver or a spender, and why?",
+    "Great. Some people feel anxious when they spend money, while others feel anxious when they save too much and miss out on experiences. What is your reaction, and why do you think you feel this way?",
+    "Interesting. Next, I'd like your opinion. Some people believe that tracking every expense in detail leads to better financial habits, while others think it's excessive and creates unnecessary stress. Do you agree that detailed expense tracking leads to better financial habits? Why or why not?",
+    "Good points. One final question. Do you think personal finance should be taught as a required subject in high school? Why or why not?"
+  ], src: "데이빗토플 Speaking Practice Set 5"
+};
+const S_LR6 = {
+  scenario: "You are training new staff at an escape room venue. Listen to the head game master and repeat what she says. Repeat only once.",
+  lines: [
+    "Welcome to the escape room game master training.",
+    "The control room is located just behind the front desk.",
+    "Room resets take about fifteen minutes between each group.",
+    "Please remind players not to force open any locked doors.",
+    "Flashlights are available to borrow if a room feels too dark.",
+    "We offer a discount for groups of eight or more every weekend.",
+    "If a player feels unwell, unlock the door and assist them immediately."
+  ], src: "데이빗토플 Speaking Practice Set 6"
+};
+const S_IV6 = {
+  scenario: "You have agreed to take part in a research study about sleep habits. You will have a short online interview with a researcher. The researcher will ask you some questions.",
+  qs: [
+    "Thank you for joining me today. I'm conducting a study about people's sleep habits. To start, how many hours of sleep do you typically get, and are you satisfied with your current sleep schedule?",
+    "Great. Some people feel refreshed after just a few hours of sleep, while others need much more to function well. What is your experience, and why do you think your body responds this way?",
+    "Interesting. Next, I'd like your opinion. Some people believe that using electronic devices before bed significantly harms sleep quality, while others think it makes little real difference. Do you agree that using devices before bed significantly harms sleep quality? Why or why not?",
+    "Good points. One final question. Do you think schools should start later in the morning to accommodate teenagers' natural sleep patterns? Why or why not?"
+  ], src: "데이빗토플 Speaking Practice Set 6"
+};
+
+const W_EMAIL6 = {
+  scenario: "You live in an apartment building, and a neighbor's frequent late-night noise has been disrupting your sleep for the past two weeks.",
+  recipient: "the building management",
+  bullets: ["Tell management what you generally appreciate about living in the building.", "Describe the noise problem you have been experiencing.", "Request that they address the issue."],
+  to: "management@brookfieldapartments.com", subject: "Ongoing Noise Disturbance – Unit 4B", src: "데이빗토플 Writing Practice Set 6",
+  checks: [
+    { label: "건물에서 만족하는 점 언급", test: (t) => /(appreciat|enjoy|love|like living|happy|pleased|quiet|well[- ]maintained|comfortable|generally|overall)/i.test(t) },
+    { label: "소음 문제를 구체적으로 설명", test: (t) => /(noise|loud|music|late[- ]night|midnight|disturb|disrupt|sleep)/i.test(t) && /(week|night|since|past|every|frequent|footstep|above|neighbo)/i.test(t) },
+    { label: "관리사무소에 조치 요청", test: (t) => /(could you|would you|please|request|would appreciate|look into|address|remind|resolve|take action|speak (to|with))/i.test(t) }
+  ]
+};
+const W_DISC6 = {
+  intro: "Your professor is teaching a class on health data privacy. Write a post responding to the professor's question.",
+  prof: "This week we're discussing health data privacy. Some genetic testing companies sell anonymized customer DNA data to pharmaceutical companies for medical research, arguing this accelerates important discoveries. Others argue that even anonymized genetic data carries privacy risks that customers may not fully understand when they agree to testing. Do you think genetic testing companies should be allowed to sell customer DNA data to pharmaceutical companies? Why or why not?",
+  s1: ["Aisha", "I think it should be allowed, as long as customers give clear, informed consent. Genetic research has led to major medical discoveries, and restricting access to anonymized data could slow down research that could ultimately save lives."],
+  s2: ["Leo", "I see Aisha's point, but I'm skeptical that most customers truly understand what they're consenting to. Genetic data is uniquely identifying, even when anonymized, and once it's shared, customers have no way to take it back if a company's practices change in the future."],
+  src: "데이빗토플 Writing Practice Set 6"
+};
+const W_EMAIL7 = {
+  scenario: "You purchased a laptop through an online electronics retailer, but it arrived with a defective screen that flickers intermittently.",
+  recipient: "the retailer's customer support team",
+  bullets: ["Tell the company what you appreciated about the ordering experience.", "Describe the screen defect you discovered.", "Request a replacement or repair."],
+  to: "support@technovaelectronics.com", subject: "Defective Screen on Recently Delivered Laptop – Order #55192", src: "데이빗토플 Writing Practice Set 7",
+  checks: [
+    { label: "주문 경험에서 좋았던 점 언급", test: (t) => /(appreciat|enjoy|pleased|happy|satisfied|smooth|impressed|quick|fast|prompt|easy|convenient|shipping|processed)/i.test(t) },
+    { label: "화면 결함을 구체적으로 설명", test: (t) => /(screen|display|flicker|defect|faulty|brightness|intermittent)/i.test(t) },
+    { label: "교체 또는 수리 요청", test: (t) => /(replac|repair|refund|exchange|fix|warranty)/i.test(t) }
+  ]
+};
+const W_DISC7 = {
+  intro: "Your professor is teaching a class on public history and memory. Write a post responding to the professor's question.",
+  prof: "This week we're discussing public monuments and historical memory. Some argue that statues honoring historically controversial figures should be removed from public spaces, since their continued presence can be seen as an implicit endorsement of harmful actions. Others argue that removing these monuments erases historical context and prevents important conversations about the past. Do you think cities should remove statues and monuments honoring historically controversial figures? Why or why not?",
+  s1: ["Naomi", "I think controversial statues should generally be removed from prominent public spaces, especially when they honor figures primarily known for causing harm. Public monuments aren't neutral historical records; they're symbols of honor, and continuing to display them in places of civic pride sends a troubling message about whose legacy a community chooses to celebrate."],
+  s2: ["Kwame", "I agree that some monuments deserve reconsideration, but I think removal isn't always the best solution. Moving controversial statues to museums, along with detailed historical context, preserves the historical record while removing the implication of civic honor, which seems like a more balanced approach than simply destroying or hiding them."],
+  src: "데이빗토플 Writing Practice Set 7"
+};
+const W_EMAIL5X = {
+  ...W_EMAIL5, recipient: "the event organizer",
+  checks: [
+    { label: "초대에 대한 감사와 매력 포인트 언급", test: (t) => /thank/i.test(t) && /(drawn|appeal|excited|interest|theme|topic|fascinat|enjoy|love|honou?r|opportunity|align|look forward)/i.test(t) },
+    { label: "초청 수락 의사 표현", test: (t) => /(accept|delighted to|happy to|glad to|pleased to|gladly|confirm (my|that)|would like to (accept|confirm)|look forward to (speaking|being|attending))/i.test(t) },
+    { label: "행사에 대한 후속 질문 1~2개", test: (t) => /\?/.test(t) && /(audience|format|length|duration|how long|how many|what time|when|where|topic|tone|size|equipment|dress|schedule|date|location|slides|projector|parking|travel|compensation|honorarium)/i.test(t) }
+  ]
+};
+
+/* ============ 세트 레지스트리 · 응시할 때마다 영역별로 무작위 선택 ============ */
+const SETS = {
+  reading:   [{ id: "Reading Set 1", units: R_SET1 }, { id: "Reading Set 2", units: R_SET2 }, { id: "Reading Set 3", units: R_SET3 }],
+  listening: [{ id: "Listening Set 4", units: L_SET4 }, { id: "Listening Set 5", units: L_SET5 }, { id: "Listening Set 6", units: L_SET6 }],
+  speaking:  [{ id: "Speaking Set 4", LR: S_LR4, IV: S_IV4 }, { id: "Speaking Set 5", LR: S_LR5, IV: S_IV5 }, { id: "Speaking Set 6", LR: S_LR6, IV: S_IV6 }],
+  writing:   [{ id: "Writing Set 5", EMAIL: W_EMAIL5X, DISC: W_DISC5 }, { id: "Writing Set 6", EMAIL: W_EMAIL6, DISC: W_DISC6 }, { id: "Writing Set 7", EMAIL: W_EMAIL7, DISC: W_DISC7 }]
+};
+let READING_UNITS, LISTENING_UNITS, LR, INTERVIEW, EMAIL, DISCUSSION;
+let SEL = {};
+function applySel(sel) {
+  SEL = sel;
+  const f = (k) => SETS[k].find((s) => s.id === sel[k]) || SETS[k][0];
+  READING_UNITS = f("reading").units; LISTENING_UNITS = f("listening").units;
+  LR = f("speaking").LR; INTERVIEW = f("speaking").IV; EMAIL = f("writing").EMAIL; DISCUSSION = f("writing").DISC;
+}
+function randomSel() {
+  let last = {}; try { last = JSON.parse(localStorage.getItem("dt_last_sets") || "{}"); } catch (e) {}
+  const sel = {};
+  Object.keys(SETS).forEach((k) => {
+    const pool = SETS[k].filter((s) => s.id !== last[k]);
+    const arr = pool.length ? pool : SETS[k];
+    sel[k] = arr[Math.floor(Math.random() * arr.length)].id;
+  });
+  try { localStorage.setItem("dt_last_sets", JSON.stringify(sel)); } catch (e) {}
+  return sel;
+}
+applySel(randomSel());
+
+
+/* ============ SCORING (공개 채점 가이드 참고 휴리스틱) ============ */
+const BANDS = {
+  reading: [[1,0],[1.5,2],[2,3],[2.5,4],[3,6],[3.5,12],[4,18],[4.5,21],[5,24],[5.5,26],[6,29]],
+  listening: [[1,0],[1.5,2],[2,4],[2.5,6],[3,9],[3.5,13],[4,17],[4.5,19],[5,22],[5.5,26],[6,28]],
+  writing: [[1,0],[1.5,3],[2,7],[2.5,11],[3,13],[3.5,15],[4,17],[4.5,23],[5,24],[5.5,27],[6,29]],
+  speaking: [[1,0],[1.5,5],[2,10],[2.5,14],[3,16],[3.5,18],[4,20],[4.5,23],[5,25],[5.5,27],[6,28]]
+};
+const OVERALL120 = { 6: "114–120", 5.5: "106–113", 5: "95–105", 4.5: "86–94", 4: "72–85", 3.5: "58–71", 3: "44–57", 2.5: "35–43", 2: "24–34", 1.5: "12–23", 1: "0–11" };
+const bandFrom = (sec, s30) => { let b = 1; BANDS[sec].forEach(([band, min]) => { if (s30 >= min) b = band; }); return b; };
+const interp = (pts, x) => { for (let i = 1; i < pts.length; i++) if (x <= pts[i][0]) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; return y0 + (y1 - y0) * (x - x0) / (x1 - x0); } return pts[pts.length - 1][1]; };
+const SPK_MAP = [[0,0],[1,4],[2,11],[3,17],[4,23],[5,28]];
+const WRT_MAP = [[0,0],[1,2],[2,8],[3,14],[4,21],[5,28.5]];
+const cefr = (b) => b >= 6 ? "C2" : b >= 5 ? "C1" : b >= 4 ? "B2" : b >= 3 ? "B1" : b >= 2 ? "A2" : "A1";
+const clampBand = (x) => Math.min(6, Math.max(1, x));
+const roundHalf = (x) => Math.round(x * 2) / 2;
+
+const words = (t) => (t || "").trim().split(/\s+/).filter(Boolean);
+const norm = (t) => (t || "").toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z0-9'\s-]/g, " ").split(/\s+/).filter(Boolean);
+const STOP = new Set("a an the to of in on at for and or is are was were be do does it its this that with you your we our can please".split(" "));
+const lcs = (a, b) => { const dp = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0)); for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] + 1 : Math.max(dp[i - 1][j], dp[i][j - 1]); return dp[a.length][b.length]; };
+
+function scoreRepeat(target, r) {
+  const tw = norm(target), rw = norm(r.text), flags = [];
+  let score, estimated = false;
+  if (!rw.length) {
+    if (r.voicedMs > 800) { score = 3; estimated = true; flags.push({ cat: "Listen and Repeat · 정확도", msg: "음성은 감지됐지만 전사 텍스트가 없어 정확도를 평가하지 못했습니다(추정 3점).", rubric: "3점: 내용어 대부분 포함, 의미 정확도 불확실" }); }
+    else { score = 0; flags.push({ cat: "Listen and Repeat · 무응답", msg: "응답이 없습니다.", rubric: "0점: 무응답" }); }
+  } else {
+    const l = lcs(tw, rw), ratio = l / tw.length, exact = tw.join(" ") === rw.join(" ");
+    const missing = tw.filter((w) => !rw.includes(w) && !STOP.has(w));
+    if (exact) score = 5; else if (ratio >= 0.85) score = 4; else if (ratio >= 0.6) score = 3; else if (ratio >= 0.35) score = 2; else score = 1;
+    if (score === 4) flags.push({ cat: "Listen and Repeat · 사소한 누락/변형", msg: "기능어 또는 시제·수 표지가 일부 빠지거나 바뀌었습니다." + (missing.length ? " 누락 내용어: " + missing.slice(0, 3).join(", ") : ""), rubric: "4점: 의미는 전달, 완전한 반복은 아님" });
+    if (score === 3) flags.push({ cat: "Listen and Repeat · 내용어 누락", msg: "내용어가 빠져 원문 의미가 정확히 전달되지 않았습니다. 누락: " + (missing.slice(0, 4).join(", ") || "-"), rubric: "3점: 완전한 문장이나 원래 의미를 정확히 담지 못함" });
+    if (score <= 2) flags.push({ cat: "Listen and Repeat · 문장 후반부 유실", msg: "문장의 상당 부분이 빠졌습니다. 긴 문장에서 끝까지 기억해 반복하는 연습이 필요합니다. 누락: " + (missing.slice(0, 4).join(", ") || "-"), rubric: "2점: 중요한 의미가 누락, 문장 단편적" });
+  }
+  return { score, estimated, flags };
+}
+
+const FILLERS = /\b(um+|uh+|er+|hmm+|you know|kind of|sort of)\b/gi;
+const CONNECT = /\b(because|for example|for instance|however|although|even though|since|so that|also|therefore|as a result|in addition|on the other hand|that said|first|second|for one|another reason|while|which|but)\b/gi;
+function scoreInterview(r, qIdx) {
+  const w = words(r.text), n = w.length, flags = [];
+  const textMode = !r.usedMic;
+  const scale = textMode ? 0.75 : 1;
+  const fillers = (r.text.match(FILLERS) || []).length, conn = (r.text.match(CONNECT) || []).length;
+  const uniq = new Set(norm(r.text)).size / Math.max(1, norm(r.text).length);
+  let score = n < 8 ? 1 : n < 25 * scale ? 2 : n < 55 * scale ? 3 : n < 80 * scale ? 4 : 5;
+  if (n === 0) score = 0;
+  if (n > 0 && !r.usedMic && n < 15) score = Math.min(score, 2);
+  if (n >= 25 && conn < 2 && score > 4) { score = 4; }
+  if (n >= 25 && conn === 0) { score = Math.min(score, 3); flags.push({ cat: "Interview · 연결어/논리", msg: "이유·예시를 잇는 연결어(because, for example 등)가 없어 전개가 평면적입니다.", rubric: "4점 이하: 문장 연결어 부족" }); }
+  if (fillers / Math.max(1, n) > 0.1) { score = Math.max(0, score - 1); flags.push({ cat: "Interview · 필러/휴지", msg: `필러(um, uh 등) ${fillers}회로 전달 흐름이 끊깁니다.`, rubric: "3점대: 잦은 휴지와 필러로 흐름이 끊김" }); }
+  if (n >= 25 && uniq < 0.55) { score = Math.min(score, 3); flags.push({ cat: "Interview · 어휘 범위", msg: "같은 단어 반복이 많아 어휘·문법 범위가 제한적으로 보입니다.", rubric: "3점대: 문법·어휘의 범위와 정확성이 제한적" }); }
+  if (n > 0 && n < 25 * scale) flags.push({ cat: "Interview · 발전(Elaboration) 부족", msg: `${n}단어로 이유·경험 elaboration이 거의 없습니다. 45초에는 보통 ${textMode ? "60" : "90"}단어 이상이 필요합니다.`, rubric: "2–3점대: 관련 elaboration이 거의 없음" });
+  else if (n < 55 * scale) flags.push({ cat: "Interview · 발전(Elaboration) 부족", msg: `${n}단어: 주제는 다뤘지만 구체적 예시가 더 필요합니다.`, rubric: "3점대: elaboration이 제한적" });
+  if (n === 0) flags.push({ cat: "Interview · 무응답", msg: "응답이 없습니다.", rubric: "0점: 무응답" });
+  return { score, n, fillers, conn, flags };
+}
+
+const MISSPELL = { recieve: "receive", sucessfully: "successfully", successfuly: "successfully", engageing: "engaging", comunity: "community", definately: "definitely", seperate: "separate", teh: "the", alot: "a lot", untill: "until", wich: "which", occured: "occurred", beleive: "believe", goverment: "government", enviroment: "environment", necesary: "necessary", accomodate: "accommodate", tommorow: "tomorrow", tomorow: "tomorrow", thier: "their", becuase: "because", wierd: "weird", submision: "submission", submited: "submitted", poem: "poem", magzine: "magazine", magazin: "magazine", responce: "response", writting: "writing", experiance: "experience", intrested: "interested", importent: "important", studens: "students", volenteer: "volunteer", volunteerism: "volunteerism" };
+function mechanics(text) {
+  const issues = [];
+  const toks = (text.toLowerCase().match(/[a-z']+/g) || []);
+  toks.forEach((t) => { if (MISSPELL[t] && MISSPELL[t] !== t) issues.push(`철자 "${t}" → ${MISSPELL[t]}`); });
+  if (/(^|[\s(])i(?=[\s,.'!?])/.test(text.replace(/I'/g, "x"))) issues.push('대문자 "I" 표기 오류');
+  const sents = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+  const lower = sents.filter((s) => /^[a-z]/.test(s.trim())).length;
+  if (lower) issues.push(`문장 첫 글자 소문자 ${lower}곳`);
+  const rep = text.match(/\b(\w+)\s+\1\b/gi); if (rep) issues.push(`단어 중복: "${rep[0]}"`);
+  if (text.trim() && !/[.!?]["')]?$/.test(text.trim())) issues.push("마지막 문장 부호 누락");
+  return issues;
+}
+const SUBORD = /\b(although|because|which|while|since|that|if|when|whereas|even though|so that|who|whose|unless)\b/gi;
+
+function scoreEmail(text) {
+  const w = words(text), n = w.length, flags = [];
+  if (n === 0) return { score: 0, n, flags: [{ cat: "Email · 무응답", msg: "답안이 비어 있습니다.", rubric: "0점: 무응답" }], checks: [] };
+  const checks = [
+    ...EMAIL.checks.map((c) => ({ label: c.label, ok: c.test(text) })),
+    { label: "인사말(Dear/Hi/Hello)", ok: /^\s*(dear|hi|hello|good (morning|afternoon))/i.test(text) },
+    { label: "맺음말(Regards/Sincerely/Thank)", ok: /(best regards|sincerely|regards|thank you|thanks|looking forward|yours)/i.test(text) },
+    { label: "정중한 요청 표현", ok: /(could you|would you|please|i would appreciate|i was wondering|kindly)/i.test(text) }
+  ];
+  const content = checks.slice(0, 3).filter((c) => !c.ok).length, conv = checks.slice(3).filter((c) => !c.ok).length;
+  let score = n < 20 ? 1 : n < 45 ? 2 : n < 70 ? 3 : n < 95 ? 4 : 5;
+  if (content >= 2) score = Math.min(score, 3); else if (content === 1) score = Math.min(score, 4);
+  if (conv >= 2) score = Math.min(score, 4);
+  const sub = (text.match(SUBORD) || []).length;
+  if (score === 5 && sub < 3) score = 4;
+  const errs = mechanics(text), rate = errs.length / Math.max(1, n / 100);
+  if (rate > 6) score = Math.max(1, score - 1);
+  const ga = analyzeText(text, "email");
+  if (ga.grammar && ga.grammar.per100 > 7) score = Math.min(score, 3); else if (ga.grammar && ga.grammar.per100 > 3) score = Math.min(score, 4);
+  if (ga.grammar && ga.grammar.status !== "good") flags.push({ cat: "Email · 문법 정확성", msg: ga.grammar.msg, rubric: "5점: 오류 거의 없음 / 4점: 오류 적음 / 3점: 눈에 띄는 오류" });
+  if (n < 70) flags.push({ cat: "Email · 분량/Elaboration", msg: `${n}단어: 세부 설명이 부족합니다. 7분 안에 90~120단어를 목표로 하세요.`, rubric: "3점대: 의사소통 목적을 부분적으로만 뒷받침" });
+  checks.slice(0, 3).forEach((c) => { if (!c.ok) flags.push({ cat: "Email · 요구사항 누락", msg: `"${c.label}" 항목이 확인되지 않습니다.`, rubric: "4점 이하: 의사소통 목적을 충분히 달성하지 못함" }); });
+  checks.slice(3).forEach((c) => { if (!c.ok) flags.push({ cat: "Email · 사회적 관습(Register)", msg: `"${c.label}"가 없습니다.`, rubric: "5점: 공손함·격식 등 사회적 관습을 일관되게 사용" }); });
+  if (sub < 3 && n >= 45) flags.push({ cat: "Email · 구문 다양성", msg: "종속절·관계절 사용이 적어 문장 구조가 단조롭습니다.", rubric: "5점: 효과적인 구문 다양성" });
+  if (errs.length) flags.push({ cat: "Email · 어휘·문법·철자 오류", msg: errs.slice(0, 4).join(" / "), rubric: "4점: 오류 적음 / 3점: 눈에 띄는 오류" });
+  return { score, n, flags, checks, errs: errs.length };
+}
+
+function scoreDiscussion(text) {
+  const w = words(text), n = w.length, flags = [];
+  const DNAMES = [DISCUSSION.s1[0], DISCUSSION.s2[0]].map((s) => s.toLowerCase()).join("|");
+  if (n === 0) return { score: 0, n, flags: [{ cat: "Discussion · 무응답", msg: "답안이 비어 있습니다.", rubric: "0점: 무응답" }], checks: [] };
+  const checks = [
+    { label: "자신의 입장 명시", ok: /(i (think|believe|agree|disagree|feel|would argue)|in my (opinion|view)|from my perspective|should|should not|shouldn't)/i.test(text) },
+    { label: "다른 학생 의견에 대한 언급/반응", ok: new RegExp("(" + DNAMES + "|student|point|argument|agree|while|however)", "i").test(text) && new RegExp("(" + DNAMES + "|point|argument|mentioned|says|said|claims|suggest|observes|contend)", "i").test(text) },
+    { label: "구체적 이유·예시", ok: /(for example|for instance|such as|because|since|this (means|helps|allows)|imagine)/i.test(text) },
+    { label: "자신만의 새 관점 추가", ok: n >= 60 && /(also|another|moreover|in addition|furthermore|what's more|besides|beyond)/i.test(text) }
+  ];
+  let score = n < 25 ? 1 : n < 55 ? 2 : n < 85 ? 3 : n < 100 ? 3 : n < 115 ? 4 : 5;
+  const miss = checks.filter((c) => !c.ok).length;
+  if (miss >= 3) score = Math.min(score, 3); else if (miss >= 1) score = Math.min(score, 4);
+  const sub = (text.match(SUBORD) || []).length, conn = (text.match(CONNECT) || []).length;
+  if (score === 5 && (sub < 4 || conn < 3)) score = 4;
+  const errs = mechanics(text), rate = errs.length / Math.max(1, n / 100);
+  if (rate > 6) score = Math.max(1, score - 1);
+  const ga = analyzeText(text, "disc");
+  if (ga.grammar && ga.grammar.per100 > 7) score = Math.min(score, 3); else if (ga.grammar && ga.grammar.per100 > 3) score = Math.min(score, 4);
+  if (ga.grammar && ga.grammar.status !== "good") flags.push({ cat: "Discussion · 문법 정확성", msg: ga.grammar.msg, rubric: "5점: 오류 거의 없음 / 4점: 오류 적음 / 3점: 눈에 띄는 오류" });
+  if (n < 100) flags.push({ cat: "Discussion · 분량 미달", msg: `${n}단어로 권장 최소 100단어에 미달합니다.`, rubric: "과제 조건 100단어 이상 / 3점대: 설명 일부 누락" });
+  checks.forEach((c) => { if (!c.ok) flags.push({ cat: "Discussion · 논점 전개", msg: `"${c.label}"이(가) 부족합니다.`, rubric: "4–5점: 관련성 높고 충실히 전개된 설명·예시" }); });
+  if (sub < 3 && n >= 60) flags.push({ cat: "Discussion · 구문 다양성", msg: "종속절 사용이 적습니다. although, which, while 등으로 문장을 확장해 보세요.", rubric: "5점: 다양한 구문의 효과적 사용" });
+  if (errs.length) flags.push({ cat: "Discussion · 어휘·문법·철자 오류", msg: errs.slice(0, 4).join(" / "), rubric: "4점: 오류 적음 / 3점: 눈에 띄는 오류" });
+  return { score, n, flags, checks, errs: errs.length };
+}
+
+/* ============ AUDIO / MIC HELPERS ============ */
+const hasTTS = typeof window !== "undefined" && "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined";
+let _voices = null;
+function loadVoices() { if (!hasTTS) return []; try { const vs = window.speechSynthesis.getVoices().filter((v) => /^en/i.test(v.lang)); if (vs.length) _voices = vs; } catch (e) {} return _voices || []; }
+if (hasTTS) { try { window.speechSynthesis.onvoiceschanged = () => loadVoices(); } catch (e) {} }
+const MALE_RE = /david|daniel|alex\b|fred|mark|george|guy|ryan|james|thomas|oliver|aaron|arthur|rishi|\bmale\b/i;
+const FEMALE_RE = /female|zira|samantha|karen|moira|tessa|susan|victoria|allison|ava|serena|fiona|jenny|aria|libby|sonia|google us english/i;
+function voiceFor(who) {
+  const vs = loadVoices(); if (!vs.length) return { voice: null, matched: false };
+  const male = vs.find((v) => /\bmale\b/i.test(v.name) && !/female/i.test(v.name)) || vs.find((v) => MALE_RE.test(v.name) && !/female/i.test(v.name));
+  const female = vs.find((v) => FEMALE_RE.test(v.name));
+  if (who === "M") { if (male) return { voice: male, matched: true }; const o = vs.find((v) => v !== female); return { voice: o || null, matched: false }; }
+  if (female) return { voice: female, matched: true }; const o = vs.find((v) => v !== male); return { voice: o || null, matched: false };
+}
+function speak(text, { who = "W", rate = 0.95 } = {}) {
+  return new Promise((resolve) => {
+    if (!hasTTS) return resolve();
+    let done = false; const fin = () => { if (!done) { done = true; resolve(); } };
+    try {
+      const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; u.rate = rate;
+      const { voice, matched } = voiceFor(who);
+      if (voice) u.voice = voice;
+      u.pitch = matched ? 1 : (who === "M" ? 0.6 : 1.3);
+      u.onend = fin; u.onerror = fin;
+      window.speechSynthesis.speak(u);
+      setTimeout(fin, text.length * 90 + 3000);
+    } catch (e) { fin(); }
+  });
+}
+const stopSpeech = () => { try { if (hasTTS) window.speechSynthesis.cancel(); } catch (e) {} };
+const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+const SR = typeof window !== "undefined" ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
+
+/* 음성 인식은 Speaking 구간 동안 세션 1개만 유지해 문항마다 권한 확인이 반복되지 않도록 한다 */
+const SRS = { rec: null, active: false, done: [], cur: [], blocked: false };
+const srsAll = () => SRS.done.concat(SRS.cur);
+const srsMark = () => srsAll().length;
+const srsSince = (b) => srsAll().slice(b).join(" ").trim();
+const SR_OFF = { v: false };
+function srsStart() {
+  if (!SR || SRS.active || SR_OFF.v || SRS.blocked) return;
+  SRS.active = true; SRS.done = []; SRS.cur = []; let restarts = 0, quick = 0, born = Date.now();
+  const r = new SR(); r.lang = "en-US"; r.continuous = true; r.interimResults = true;
+  r.onstart = () => { born = Date.now(); };
+  r.onresult = (ev) => { SRS.cur = []; for (let i = 0; i < ev.results.length; i++) SRS.cur.push(ev.results[i][0].transcript.trim()); };
+  r.onend = () => {
+    SRS.done = SRS.done.concat(SRS.cur); SRS.cur = [];
+    if (Date.now() - born < 1500) quick++; else quick = 0;
+    /* 권한 오류·반복 즉시 종료 시 재시작을 멈춰 허용 팝업이 다시 뜨지 않게 한다 */
+    if (SRS.active && !SRS.blocked && quick < 3 && restarts++ < 200) setTimeout(() => { if (SRS.active && !SRS.blocked) { try { r.start(); } catch (e) { SRS.active = false; } } }, 250);
+    else SRS.active = false;
+  };
+  r.onerror = (e) => { if (e && (e.error === "not-allowed" || e.error === "service-not-allowed")) { SRS.blocked = true; SRS.active = false; } };
+  try { r.start(); SRS.rec = r; } catch (e) { SRS.active = false; }
+}
+function srsStop() { SRS.active = false; try { SRS.rec && SRS.rec.stop(); } catch (e) {} }
+
+const MicContext = createContext({ status: "unknown", stream: null });
+
+function useCountdown(total, onEnd) {
+  const [left, setLeft] = useState(total);
+  const endRef = useRef(onEnd); endRef.current = onEnd;
+  useEffect(() => {
+    const end = Date.now() + total * 1000; let fired = false;
+    const id = setInterval(() => {
+      const l = Math.max(0, Math.ceil((end - Date.now()) / 1000)); setLeft(l);
+      if (l <= 0 && !fired) { fired = true; clearInterval(id); endRef.current(); }
+    }, 250);
+    return () => clearInterval(id);
+  }, [total]);
+  return left;
+}
+
+function LevelMeter({ stream, active, onVoiced }) {
+  const [lv, setLv] = useState(0);
+  useEffect(() => {
+    if (!stream || !active) { setLv(0); return; }
+    let raf, ctx, last = performance.now();
+    try {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const src = ctx.createMediaStreamSource(stream), an = ctx.createAnalyser(); an.fftSize = 512; src.connect(an);
+      const buf = new Uint8Array(an.fftSize);
+      const loop = () => {
+        an.getByteTimeDomainData(buf); let sum = 0; for (let i = 0; i < buf.length; i++) { const v = (buf[i] - 128) / 128; sum += v * v; }
+        const rms = Math.sqrt(sum / buf.length), now = performance.now(), dt = now - last; last = now;
+        setLv(Math.min(1, rms * 5)); if (rms > 0.02 && onVoiced) onVoiced(dt);
+        raf = requestAnimationFrame(loop);
+      }; loop();
+    } catch (e) {}
+    return () => { cancelAnimationFrame(raf); try { ctx && ctx.close(); } catch (e) {} };
+  }, [stream, active]);
+  const bars = 14;
+  return (
+    <div className="flex items-end gap-[3px] h-8" aria-label="마이크 입력 레벨">
+      {Array.from({ length: bars }).map((_, i) => (
+        <div key={i} style={{ width: 5, height: `${Math.max(12, Math.min(100, (lv * 140) * (0.5 + 0.5 * Math.sin(i * 1.3 + 1))))}%`, background: lv > 0.04 ? "var(--accent)" : "var(--line)", borderRadius: 3, transition: "height .08s" }} />
+      ))}
+    </div>
+  );
+}
+
+/* ============ UI PRIMITIVES ============ */
+const SECTIONS = [["reading", "Reading"], ["listening", "Listening"], ["writing", "Writing"], ["speaking", "Speaking"]];
+
+function Shell({ section, title, step, total, timeLabel, timeLeft, warnAt = 15, children, footer }) {
+  const mic = useContext(MicContext);
+  const pct = Math.round((step / total) * 100);
+  const warn = timeLeft != null && timeLeft <= warnAt;
+  return (
+    <div className="min-h-screen flex flex-col">
+      <header className="bg-bar text-barInk sticky z-20" style={{ top: "env(safe-area-inset-top, 0px)" }}>
+        <div className="max-w-5xl mx-auto px-4 py-2.5 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="font-bold tracking-wide text-[13px] opacity-95">데이빗토플 <span className="opacity-60 font-medium">· Quick Diagnostic Test</span></div>
+          <nav className="flex gap-1 text-[12px]" aria-label="영역">
+            {SECTIONS.map(([k, label]) => (
+              <span key={k} className="px-2.5 py-1 rounded" style={{ background: k === section ? "var(--accent)" : "transparent", color: k === section ? "var(--accentInk)" : "inherit", opacity: k === section ? 1 : 0.55, fontWeight: k === section ? 700 : 500 }}>{label}</span>
+            ))}
+          </nav>
+          <div className="ml-auto flex items-center gap-3">
+            <span className="text-[12px] opacity-80 hidden sm:inline">{mic.status === "ready" ? "🎙 마이크 연결됨" : "⌨ 텍스트 응답 모드"}</span>
+            {mic.openEnd && <button type="button" className="end-btn" onClick={mic.openEnd}>시험 종료</button>}
+            {timeLeft != null && (
+              <div className="mono flex items-center gap-2 px-3 py-1 rounded text-lg font-semibold" style={{ background: warn ? "var(--bad)" : "rgba(255,255,255,.12)", color: warn ? "#fff" : "inherit" }} aria-live="off">
+                <span className="text-[11px] font-medium opacity-80 uppercase">{timeLabel}</span>{fmt(timeLeft)}
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="h-1.5" style={{ background: "rgba(255,255,255,.15)" }} role="progressbar" aria-valuenow={pct} aria-valuemin="0" aria-valuemax="100">
+          <div className="h-full" style={{ width: pct + "%", background: "var(--accent)", transition: "width .3s" }} />
+        </div>
+        <div className="max-w-5xl mx-auto px-4 py-1.5 text-[12px] opacity-80 flex justify-between"><span>{title}</span><span>{step} / {total} ({pct}%)</span></div>
+      </header>
+      <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-6">{children}</main>
+      <p className="w-full max-w-5xl mx-auto px-4 pb-4 text-[11px] text-muted">데이빗토플이 자체 제작한 레벨테스트입니다. 결과는 학습 참고용 추정치입니다.</p>
+      {footer && <footer className="sticky bottom-0 bg-surface border-t border-line" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}><div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3 flex-wrap">{footer}</div></footer>}
+    </div>
+  );
+}
+
+const Card = ({ children, className = "" }) => <section className={"bg-surface border border-line rounded-lg p-5 " + className}>{children}</section>;
+const Tag = ({ children, tone = "muted" }) => <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded" style={{ background: tone === "accent" ? "var(--accent)" : "var(--surface2)", color: tone === "accent" ? "var(--accentInk)" : "var(--muted)" }}>{children}</span>;
+
+function MCQ({ q, idx, value, onChange }) {
+  return (
+    <div className="mb-6" role="radiogroup" aria-label={q.q}>
+      <p className="font-semibold mb-2">{idx}. {q.q}</p>
+      <div className="flex flex-col gap-2">
+        {q.o.map((o, i) => (
+          <button key={i} type="button" role="radio" aria-checked={value === i} className="opt" onClick={() => onChange(i)}>
+            <span className="dot" /><span><span className="mono text-muted mr-2">{"ABCD"[i]}</span>{o}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ============ READING ============ */
+function Reading({ onDone }) {
+  const [u, setU] = useState(0);
+  const [ans, setAns] = useState({});
+  const ansRef = useRef(ans); ansRef.current = ans;
+  useLive(() => compileMCQ(READING_UNITS, ansRef.current, "reading"));
+  const finish = useCallback(() => onDone(compileMCQ(READING_UNITS, ansRef.current, "reading")), [onDone]);
+  const left = useCountdown(READING_SECONDS, finish);
+  const unit = READING_UNITS[u];
+  const set = (k, v) => setAns((a) => ({ ...a, [k]: v }));
+  return (
+    <Shell section="reading" title={`${unit.title} · ${unit.src}`} step={u + 1} total={READING_UNITS.length} timeLabel="Section" timeLeft={left} warnAt={30}
+      footer={<><span className="text-sm text-muted">Reading 샘플 문항 · 영역 제한시간 {READING_SECONDS / 60}분</span>
+        <button className="btn" onClick={() => (u + 1 < READING_UNITS.length ? setU(u + 1) : finish())}>{u + 1 < READING_UNITS.length ? "Next →" : "Reading 제출 · Listening으로"}</button></>}>
+      <div className="mb-3 flex items-center gap-2"><Tag tone="accent">{unit.title}</Tag><span className="text-muted text-sm">{unit.instr}</span></div>
+      {unit.kind === "ctw" ? (
+        <Card><p className="passage">
+          {unit.parts.map((p, i) => typeof p === "string" ? <span key={i}>{p}</span> :
+            <input key={i} id={`ctw-${i}`} type="text" className="blank" style={{ width: `${p.b.length * 0.85 + 1}em` }} placeholder={"_".repeat(p.b.length)} maxLength={p.b.length} autoComplete="off" spellCheck="false" aria-label={`빈칸 ${p.b.length}글자`} value={ans["ctw" + i] || ""} onChange={(e) => set("ctw" + i, e.target.value)} />)}
+        </p><p className="text-sm text-muted mt-4">단어의 뒷부분이 비어 있습니다. 밑줄(_) 하나가 빠진 글자 1개이므로, 밑줄 개수만큼 알파벳을 입력하세요. (10곳)</p></Card>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-4">
+          <Card className="min-w-0"><p className="passage whitespace-pre-line">{unit.passage}</p></Card>
+          <Card className="min-w-0">{unit.qs.map((q, i) => <MCQ key={i} q={q} idx={i + 1} value={ans[unit.id + i]} onChange={(v) => set(unit.id + i, v)} />)}</Card>
+        </div>
+      )}
+    </Shell>
+  );
+}
+
+function compileMCQ(units, ans, sec) {
+  const items = [];
+  units.forEach((un) => {
+    if (un.kind === "ctw") un.parts.forEach((p, i) => { if (typeof p !== "string") items.push({ unit: un.title, skill: "Word form / spelling", ok: (ans["ctw" + i] || "").trim().toLowerCase() === p.b, answered: !!(ans["ctw" + i] || "").trim(), q: "빈칸 " + p.b.length + "글자 (" + p.b + ")" }); });
+    else un.qs.forEach((q, i) => items.push({ unit: un.title, skill: q.skill, ok: ans[un.id + i] === q.a, answered: ans[un.id + i] !== undefined, q: q.q, picked: ans[un.id + i], correct: q.a, opts: q.o, scriptUsed: ans["script_" + un.id] }));
+  });
+  const right = items.filter((x) => x.ok).length;
+  return { items, right, total: items.length, ratio: right / items.length };
+}
+
+/* ============ LISTENING ============ */
+function AudioUnit({ unit, onPlayed, scriptShown, onShowScript }) {
+  const [state, setState] = useState("idle");
+  const [who, setWho] = useState(null);
+  const cancel = useRef(false);
+  useEffect(() => () => { cancel.current = true; stopSpeech(); }, []);
+  const names = { W: "Woman", M: "Man" };
+  const speakers = [...new Set(unit.lines.map((l) => l.who))];
+  const play = async () => {
+    setState("playing"); cancel.current = false;
+    for (const l of unit.lines) { if (cancel.current) return; setWho(l.who); await speak(l.t, { who: l.who }); await new Promise((r) => setTimeout(r, 350)); }
+    setWho(null); setState("done"); onPlayed();
+  };
+  return (
+    <Card>
+      <div className="flex items-center gap-4 flex-wrap">
+        <button className="btn" disabled={state !== "idle"} onClick={play}>{state === "idle" ? "▶ 재생 (1회만)" : state === "playing" ? "재생 중…" : "재생 완료"}</button>
+        <div className="flex items-end gap-1 h-8" aria-hidden="true">
+          {Array.from({ length: 16 }).map((_, i) => <div key={i} className="wavebar" style={{ animationDelay: `${(i % 8) * 0.1}s`, animationPlayState: state === "playing" ? "running" : "paused", height: state === "playing" ? undefined : "15%", opacity: state === "playing" ? 1 : 0.35 }} />)}
+        </div>
+        {speakers.length > 1 && <div className="flex gap-2">{speakers.map((s) => <span key={s} className="text-xs font-semibold px-2.5 py-1 rounded border" style={{ borderColor: who === s ? "var(--accent)" : "var(--line)", background: who === s ? "var(--accent)" : "var(--surface2)", color: who === s ? "var(--accentInk)" : "var(--muted)" }}>{names[s]}</span>)}</div>}
+        {!hasTTS && <span className="text-sm text-warn">이 브라우저는 음성 합성을 지원하지 않습니다. 아래 스크립트로 진행하세요.</span>}
+      </div>
+      <div className="mt-3 text-sm">
+        {(scriptShown || !hasTTS) ? <div className="bg-surface2 border border-line rounded p-3 whitespace-pre-line passage">{unit.lines.map((l) => (speakers.length > 1 ? names[l.who] + ": " : "") + l.t).join("\n")}</div>
+          : <button className="underline text-muted" onClick={onShowScript}>소리가 나지 않나요? 스크립트 보기 (채점 신뢰도 표시됨)</button>}
+      </div>
+    </Card>
+  );
+}
+
+function Listening({ onDone }) {
+  const [u, setU] = useState(0);
+  const [ans, setAns] = useState({});
+  const [played, setPlayed] = useState({});
+  const ansRef = useRef(ans); ansRef.current = ans;
+  useLive(() => compileMCQ(LISTENING_UNITS, ansRef.current, "listening"));
+  const finish = useCallback(() => { stopSpeech(); onDone(compileMCQ(LISTENING_UNITS, ansRef.current, "listening")); }, [onDone]);
+  const left = useCountdown(LISTENING_SECONDS, finish);
+  const unit = LISTENING_UNITS[u];
+  const set = (k, v) => setAns((a) => ({ ...a, [k]: v }));
+  const unplayed = !played[unit.id] && hasTTS && !ans["script_" + unit.id];
+  return (
+    <Shell section="listening" title={`${unit.title} · ${unit.src}`} step={u + 1} total={LISTENING_UNITS.length} timeLabel="Section" timeLeft={left} warnAt={30}
+      footer={<><span className="text-sm text-muted">{unplayed ? "먼저 오디오를 재생하세요." : "문항에 답한 뒤 다음으로 이동합니다."}</span>
+        <button className="btn" onClick={() => { stopSpeech(); u + 1 < LISTENING_UNITS.length ? setU(u + 1) : finish(); }}>{u + 1 < LISTENING_UNITS.length ? "Next →" : "Listening 제출 · Writing으로"}</button></>}>
+      <div className="mb-3 flex items-center gap-2"><Tag tone="accent">{unit.title}</Tag><span className="text-muted text-sm">{unit.instr}</span></div>
+      <div className="flex flex-col gap-4" key={unit.id}>
+        <AudioUnit unit={unit} scriptShown={!!ans["script_" + unit.id]} onShowScript={() => set("script_" + unit.id, true)} onPlayed={() => setPlayed((p) => ({ ...p, [unit.id]: true }))} />
+        <Card>{unit.qs.map((q, i) => <MCQ key={i} q={q} idx={i + 1} value={ans[unit.id + i]} onChange={(v) => set(unit.id + i, v)} />)}</Card>
+      </div>
+    </Shell>
+  );
+}
+
+/* ============ WRITING ============ */
+function WriteTask({ kind, onDone, stepOffset, liveRef }) {
+  const isEmail = kind === "email";
+  const [text, setText] = useState("");
+  const textRef = useRef(""); textRef.current = text;
+  if (liveRef) liveRef.current = () => textRef.current;
+  const doneRef = useRef(false);
+  const finish = useCallback(() => { if (doneRef.current) return; doneRef.current = true; onDone(textRef.current); }, [onDone]);
+  const total = isEmail ? EMAIL_SECONDS : DISCUSSION_SECONDS;
+  const left = useCountdown(total, finish);
+  const n = words(text).length, minW = isEmail ? 0 : 100;
+  return (
+    <Shell section="writing" title={isEmail ? "Write an Email · 7분" : "Write for an Academic Discussion · 10분"} step={stepOffset} total={2} timeLabel={isEmail ? "Email" : "Discussion"} timeLeft={left} warnAt={60}
+      footer={<><span className="text-sm mono" style={{ color: !isEmail && n < minW ? "var(--warn)" : "var(--good)" }}>{n} words · {text.length} chars{!isEmail && (n >= minW ? " · 100단어 이상 ✓" : ` · ${minW - n}단어 더 필요`)}</span>
+        <button className="btn" onClick={finish}>{isEmail ? "Email 제출 → 다음 Task" : "Writing 제출 · Speaking으로"}</button></>}>
+      <div className="grid lg:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-3 min-w-0">
+          {isEmail ? (
+            <Card>
+              <div className="flex items-center gap-2 mb-2"><Tag tone="accent">Write an Email</Tag><span className="text-sm text-muted">You will read some information and use it to write an email.</span></div>
+              <p className="passage mb-3">{EMAIL.scenario}</p>
+              <p className="font-semibold mb-1">Write an email to {EMAIL.recipient}. In your email, do the following.</p>
+              <ul className="list-disc pl-5 passage">{EMAIL.bullets.map((b) => <li key={b}>{b}</li>)}</ul>
+              <p className="text-sm text-muted mt-3">Write as much as you can and in complete sentences.</p>
+            </Card>
+          ) : (
+            <>
+              <Card>
+                <div className="flex items-center gap-2 mb-2"><Tag tone="accent">Academic Discussion</Tag></div>
+                <p className="passage mb-2">{DISCUSSION.intro}</p>
+                <ul className="list-disc pl-5 text-sm"><li>Express and support your opinion.</li><li>Make a contribution to the discussion in your own words.</li></ul>
+                <p className="text-sm text-muted mt-2">An effective response will contain at least 100 words.</p>
+              </Card>
+              <Card className="space-y-3 text-[14.5px] leading-relaxed">
+                <div><div className="font-semibold">Professor</div>{DISCUSSION.prof}</div>
+                <div className="border-t border-line pt-3"><div className="font-semibold">{DISCUSSION.s1[0]}</div>{DISCUSSION.s1[1]}</div>
+                <div className="border-t border-line pt-3"><div className="font-semibold">{DISCUSSION.s2[0]}</div>{DISCUSSION.s2[1]}</div>
+              </Card>
+            </>
+          )}
+        </div>
+        <Card className="min-w-0 flex flex-col gap-2">
+          <div className="font-semibold">Your Response</div>
+          {isEmail && <div className="text-sm border border-line rounded p-2 bg-surface2"><div><span className="text-muted">To:</span> {EMAIL.to}</div><div><span className="text-muted">Subject:</span> {EMAIL.subject}</div></div>}
+          <textarea id={"write-" + kind} className="w-full p-3 passage" style={{ minHeight: 320, resize: "vertical" }} value={text} onChange={(e) => setText(e.target.value)} placeholder="Type your response here…" spellCheck="false" autoFocus />
+          <div className="flex justify-between text-sm mono text-muted"><span>{n} words</span>{!isEmail && <span>min 100</span>}</div>
+          {!isEmail && <div className="h-2 rounded bg-surface2 border border-line overflow-hidden"><div className="h-full" style={{ width: Math.min(100, n) + "%", background: n >= 100 ? "var(--good)" : "var(--warn)", transition: "width .2s" }} /></div>}
+        </Card>
+      </div>
+    </Shell>
+  );
+}
+
+function Writing({ onDone }) {
+  const [stage, setStage] = useState(0); const [res, setRes] = useState({});
+  const liveRef = useRef(() => "");
+  useLive(() => ({ email: stage === 0 ? liveRef.current() : (res.email || ""), disc: stage === 1 ? liveRef.current() : "" }));
+  if (stage === 0) return <WriteTask key="e" kind="email" stepOffset={1} liveRef={liveRef} onDone={(t) => { setRes({ email: t }); setStage(1); }} />;
+  return <WriteTask key="d" kind="disc" stepOffset={2} liveRef={liveRef} onDone={(t) => onDone({ ...res, disc: t })} />;
+}
+
+/* ============ SPEAKING ============ */
+function ResponsePanel({ seconds, label, placeholder, onFinish, onTick }) {
+  const mic = useContext(MicContext);
+  const [text, setText] = useState(""); const textRef = useRef(""); textRef.current = text;
+  const [recording, setRecording] = useState(false);
+  const [, force] = useState(0);
+  const voiced = useRef(0), doneRef = useRef(false), recRef = useRef(null), edited = useRef(false), base = useRef(srsMark());
+  const useMic = mic.status === "ready" && mic.stream;
+  useEffect(() => {
+    SPK_CUR.get = () => { let t = textRef.current; if (!edited.current && SRS.active) t = srsSince(base.current); return { text: t, voicedMs: voiced.current, usedMic: !!useMic, usedSR: !!(useMic && SRS.active) }; };
+    return () => { SPK_CUR.get = null; };
+  }, [useMic]);
+  useEffect(() => {
+    if (!useMic) return;
+    setRecording(true);
+    try { recRef.current = new MediaRecorder(mic.stream); recRef.current.start(); } catch (e) {}
+    const id = setInterval(() => { if (!edited.current && SRS.active) { const t = srsSince(base.current); if (t !== textRef.current) setText(t); } }, 300);
+    return () => { clearInterval(id); try { recRef.current && recRef.current.state !== "inactive" && recRef.current.stop(); } catch (e) {} };
+  }, [useMic]);
+  const finish = useCallback(() => {
+    if (doneRef.current) return; doneRef.current = true; setRecording(false);
+    let t = textRef.current; if (!edited.current && SRS.active) t = srsSince(base.current);
+    try { recRef.current && recRef.current.state !== "inactive" && recRef.current.stop(); } catch (e) {}
+    onFinish({ text: t, voicedMs: voiced.current, usedMic: !!useMic, usedSR: !!(useMic && SRS.active) });
+  }, [onFinish, useMic]);
+  const left = useCountdown(seconds, finish);
+  const pct = ((seconds - left) / seconds) * 100;
+  useEffect(() => { if (onTick) onTick(left); }, [left]);
+  return (
+    <Card className="flex flex-col gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
+        <span className="flex items-center gap-2 font-semibold" style={{ color: recording ? "var(--bad)" : "var(--muted)" }}>
+          <span className={recording ? "rec" : ""} style={{ width: 12, height: 12, borderRadius: "50%", background: recording ? "var(--bad)" : "var(--muted)", display: "inline-block" }} />
+          {recording ? "REC · 녹음 중" : "텍스트 응답 모드"}
+        </span>
+        <LevelMeter stream={useMic ? mic.stream : null} active={recording} onVoiced={(dt) => { voiced.current += dt; }} />
+        <span className="ml-auto mono text-2xl font-semibold" style={{ color: left <= 5 ? "var(--bad)" : "var(--ink)" }}>{fmt(left)}</span>
+      </div>
+      <div className="h-2 rounded bg-surface2 border border-line overflow-hidden"><div className="h-full" style={{ width: pct + "%", background: left <= 5 ? "var(--bad)" : "var(--accent)", transition: "width .25s linear" }} /></div>
+      <label htmlFor="spk-text" className="text-sm text-muted">{useMic ? (SR && SRS.active ? "실시간 전사(수정 가능)" : "이 브라우저는 자동 전사를 지원하지 않아 채점용으로 답변 내용을 직접 입력해 주세요.") : label}</label>
+      <textarea id="spk-text" className="w-full p-3" style={{ minHeight: 110, resize: "vertical" }} value={text} onChange={(e) => { edited.current = true; setText(e.target.value); }} placeholder={placeholder} spellCheck="false" autoFocus />
+      <div className="flex justify-between items-center"><span className="text-sm text-muted mono">{words(text).length} words{useMic && SR && SRS.active && <button className="underline ml-3 font-sans" onClick={() => { SR_OFF.v = true; srsStop(); force((n) => n + 1); }}>자동 전사 끄기</button>}</span><button className="btn" onClick={finish}>답변 완료 →</button></div>
+    </Card>
+  );
+}
+
+function Speaking({ onDone }) {
+  const mic = useContext(MicContext);
+  const total = LR.lines.length + INTERVIEW.qs.length;
+  const [i, setI] = useState(0);
+  const [phase, setPhase] = useState("listen");
+  const [scriptShown, setScriptShown] = useState(false);
+  const [tl, setTl] = useState(null);
+  const results = useRef({ lr: [], iv: [] });
+  const isLR = i < LR.lines.length;
+  const qi = i - LR.lines.length;
+  const iRef = useRef(0); iRef.current = i;
+  useLive(() => {
+    const out = { lr: results.current.lr.slice(), iv: results.current.iv.slice() };
+    const cur = SPK_CUR.get && SPK_CUR.get(), ii = iRef.current;
+    if (cur && (cur.text || "").trim()) { if (ii < LR.lines.length) { if (out.lr.length === ii) out.lr.push({ ...cur }); } else if (out.iv.length === ii - LR.lines.length) out.iv.push({ ...cur }); }
+    return out;
+  });
+  useEffect(() => { if (mic.status === "unknown") mic.requestMic(); }, []);
+  useEffect(() => { if (mic.status === "ready") srsStart(); }, [mic.status]);
+  useEffect(() => () => srsStop(), []);
+  const next = (r) => {
+    (isLR ? results.current.lr : results.current.iv).push({ ...r, scriptShown });
+    if (i + 1 >= total) { stopSpeech(); srsStop(); onDone(results.current); return; }
+    setI(i + 1); setPhase("listen"); setScriptShown(false); setTl(null);
+  };
+  useEffect(() => {
+    let cancelled = false; setPhase("listen");
+    (async () => {
+      await new Promise((r) => setTimeout(r, 500));
+      await speak(isLR ? LR.lines[i] : INTERVIEW.qs[qi], { who: isLR ? "W" : "M" });
+      await new Promise((r) => setTimeout(r, 700));
+      if (!cancelled) setPhase(!isLR && !hasTTS ? "ready" : "respond");
+    })();
+    return () => { cancelled = true; stopSpeech(); };
+  }, [i]);
+  const title = isLR ? `Listen and Repeat · ${i + 1}/7` : `Take an Interview · Question ${qi + 1}/4`;
+  return (
+    <Shell section="speaking" title={title} step={i + 1} total={total} timeLabel={isLR ? "Speak" : "Answer"} timeLeft={tl} warnAt={5}>
+      <div className="mb-3 flex items-center gap-2 flex-wrap"><Tag tone="accent">{isLR ? "Listen and Repeat" : "Take an Interview"}</Tag>
+        <span className="text-sm text-muted">{isLR ? "No preparation time. 들은 문장을 한 번만 그대로 따라 말하세요." : "준비시간 없음. 질문이 모두 끝난 직후 45초 타이머가 시작됩니다."}</span></div>
+      <div className="flex flex-col gap-4 max-w-3xl mx-auto">
+        <Card>
+          <p className="text-sm text-muted mb-2">{isLR ? LR.scenario : INTERVIEW.scenario}</p>
+          {isLR ? (
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-end gap-1 h-10" aria-hidden="true">{Array.from({ length: 20 }).map((_, k) => <div key={k} className="wavebar" style={{ animationDelay: `${(k % 9) * 0.09}s`, animationPlayState: phase === "listen" ? "running" : "paused", height: phase === "listen" ? undefined : "12%", opacity: phase === "listen" ? 1 : 0.3 }} />)}</div>
+              <span className="font-semibold">{phase === "listen" ? "🔊 Listen carefully…" : "🎙 Now repeat."}</span>
+              {(scriptShown || !hasTTS) ? <p className="passage w-full bg-surface2 border border-line rounded p-3">{LR.lines[i]}</p>
+                : <button className="underline text-sm text-muted ml-auto" onClick={() => setScriptShown(true)}>소리가 안 나요 → 스크립트 보기</button>}
+            </div>
+          ) : (
+            <div><div className="font-semibold mb-1">Interviewer</div><p className="passage">{INTERVIEW.qs[qi]}</p></div>
+          )}
+        </Card>
+        {phase === "respond"
+          ? <ResponsePanel key={i} onTick={setTl} seconds={isLR ? LR_SECONDS : INTERVIEW_SECONDS} onFinish={next}
+              label={isLR ? "들은 문장을 입력하세요(마이크 사용 불가 시 텍스트로 응답)" : "45초 동안 답변을 입력하세요. 마이크가 없을 때는 말할 내용을 그대로 타이핑합니다."}
+              placeholder={isLR ? "Type exactly what you heard…" : "Answer the interviewer's question…"} />
+          : phase === "ready"
+            ? <Card><div className="text-center py-4"><p className="text-muted mb-3">질문을 다 읽었으면 시작하세요. 버튼을 누르는 순간 45초 타이머가 시작됩니다.</p><button className="btn" onClick={() => setPhase("respond")}>답변 시작 (타이머 시작)</button></div></Card>
+            : <Card><p className="text-muted text-center py-6">{isLR ? "문장을 듣는 중입니다." : "🔊 질문을 듣는 중입니다. 질문이 끝나면 45초 타이머가 시작됩니다."}</p></Card>}
+      </div>
+    </Shell>
+  );
+}
+
+/* ============ INTRO ============ */
+function Intro({ onStart, name, setName }) {
+  const rows = [["Reading", "Complete the Words(10칸) · Daily Life · Academic Passage", "14문항"], ["Listening", "Choose a Response · Conversation(남·여) · Announcement · Academic Talk", "7문항"],
+    ["Writing", "Write an Email (7분) · Academic Discussion (10분, 100단어↑)", "2 Task"], ["Speaking", "Listen and Repeat 7문항 · Take an Interview 4문항 (각 45초)", "11 Task"]];
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-10 flex flex-col gap-6">
+      <div>
+        <p className="text-sm font-semibold tracking-widest text-accent">데이빗토플 · 레벨테스트 · 약 30분</p>
+        <h1 className="text-3xl font-bold mt-1" style={{ textWrap: "balance" }}>데이빗토플 Quick Diagnostic Test</h1>
+        <p className="text-muted mt-2">TOEFL 대비 실력을 빠르게 진단하는 4영역 레벨테스트입니다. Speaking과 Writing 비중을 높여 구성했습니다. 응시 결과는 화면에 표시되지 않고 선생님께 전달되며, 분석 후 안내해 드립니다.</p>
+      </div>
+      <div className="rounded-lg p-4 text-sm border border-line bg-surface2" role="note"><p className="font-bold mb-1 text-accent">데이빗토플이 직접 제작한 테스트입니다</p><p>모든 문항은 데이빗토플 모의고사 세트에서 발췌했고, 채점 알고리즘과 리포트도 자체 제작했습니다. 결과는 공식 점수가 아닌 학습 참고용 추정치입니다.</p></div>
+      <Card>
+        <table className="w-full text-sm"><tbody>{rows.map(([a, b, c]) => <tr key={a} className="border-b border-line last:border-0 align-top"><td className="py-2 pr-3 font-semibold whitespace-nowrap">{a}</td><td className="py-2 pr-3 text-muted">{b}</td><td className="py-2 text-right mono whitespace-nowrap">{c}</td></tr>)}</tbody></table>
+      </Card>
+      <Card className="flex flex-col gap-3">
+        <label htmlFor="name" className="font-semibold">응시자 이름 <span className="text-sm font-normal text-muted">(필수)</span></label>
+        <input id="name" type="text" className="p-2.5 max-w-sm" value={name} onChange={(e) => setName(e.target.value)} placeholder="이름 (선생님께 결과를 전달할 때 사용)" />
+        <div className="border-t border-line pt-3 flex items-center gap-3 flex-wrap">
+          <MicTest />
+        </div>
+        <p className="text-xs text-muted">시험 시작 버튼을 누를 때 마이크 허용을 한 번만 요청하며, 이후 Speaking 전 문항에서 같은 연결을 그대로 사용합니다.</p>
+        <details className="text-sm border border-line rounded p-3 bg-surface2">
+          <summary className="cursor-pointer font-semibold">마이크 허용 팝업이 계속 뜰 때 · 항상 허용으로 바꾸는 방법</summary>
+          <ol className="list-decimal pl-5 mt-2 space-y-1 text-muted">
+            <li>크롬 주소창 왼쪽의 <b className="text-ink">자물쇠(또는 설정) 아이콘</b>을 누릅니다.</li>
+            <li><b className="text-ink">마이크</b>를 <b className="text-ink">허용</b>으로 바꾸고, 안내가 나오면 페이지를 새로고침합니다.</li>
+            <li>파일을 더블클릭해 열면(주소가 file:// 로 시작) 브라우저가 허용을 저장하지 못해 매번 팝업이 뜰 수 있어요. <b className="text-ink">https:// 로 시작하는 웹 주소</b>로 접속해 주세요.</li>
+          </ol>
+        </details>
+      </Card>
+      <div><button className="btn text-lg" disabled={!name.trim()} onClick={onStart}>시험 시작 →</button><p className="text-xs text-muted mt-2">시작하면 Reading 타이머가 바로 시작됩니다. 소리를 켜고 헤드폰을 착용하세요. 시험 중에는 상단의 <b>시험 종료</b> 버튼으로 언제든 끝낼 수 있습니다.</p></div>
+    </div>
+  );
+}
+
+function MicTest() {
+  const mic = useContext(MicContext);
+  const { requestMic } = mic;
+  const [phase, setPhase] = useState("idle");
+  const [count, setCount] = useState(0);
+  const [note, setNote] = useState("");
+  const [asr, setAsr] = useState(!SR_OFF.v);
+  const recordAndPlay = async () => {
+    setNote("");
+    const stream = mic.stream || (await requestMic());
+    if (!stream) return;
+    try {
+      const rec = new MediaRecorder(stream); const chunks = [];
+      rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+      const stopped = new Promise((r) => { rec.onstop = r; });
+      rec.start(); setPhase("recording");
+      for (let n = 4; n > 0; n--) { setCount(n); await new Promise((r) => setTimeout(r, 1000)); }
+      rec.stop(); await stopped;
+      setPhase("playing");
+      const buf = await new Blob(chunks, { type: rec.mimeType || "audio/webm" }).arrayBuffer();
+      const AC = window.AudioContext || window.webkitAudioContext; const ac = new AC();
+      const audio = await ac.decodeAudioData(buf);
+      const src = ac.createBufferSource(); src.buffer = audio; src.connect(ac.destination);
+      src.onended = () => { setPhase("idle"); try { ac.close(); } catch (e) {} };
+      src.start();
+    } catch (e) { setPhase("idle"); setNote("내 목소리 재생에 실패했습니다. 레벨 미터가 움직이면 녹음 자체는 정상입니다."); }
+  };
+  const toggleAsr = (v) => { SR_OFF.v = !v; setAsr(v); };
+  return (
+    <div className="flex flex-col gap-3 w-full">
+      <div className="flex items-center gap-3 flex-wrap">
+        <button className="btn btn-ghost" disabled={phase !== "idle"} onClick={recordAndPlay}>🎙 4초 녹음 후 내 목소리 듣기</button>
+        {hasTTS && <button className="btn btn-ghost" onClick={() => speak("Sound check. You should hear this sentence clearly.")}>🔊 스피커 테스트</button>}
+        <LevelMeter stream={mic.stream} active={mic.status === "ready"} />
+      </div>
+      <p className="text-sm" style={{ color: phase === "recording" ? "var(--bad)" : mic.status === "ready" ? "var(--good)" : mic.status === "denied" ? "var(--warn)" : "var(--muted)" }}>
+        {phase === "recording" ? `● 녹음 중… ${count}초 (아무 문장이나 말해 보세요)` : phase === "playing" ? "▶ 내 목소리를 재생 중입니다" :
+          mic.status === "ready" ? "마이크 연결됨" + (mic.perm === "granted" ? " (항상 허용 상태)" : "") + " · 버튼을 눌러 내 목소리를 확인하세요" : mic.status === "denied" ? "마이크를 사용할 수 없어 텍스트 응답 모드로 진행합니다 (주소창 자물쇠 → 마이크 → 허용 후 새로고침하면 다시 사용할 수 있어요)" : "아직 확인하지 않음 · 버튼을 누르면 마이크 허용을 요청합니다 (건너뛰면 텍스트 응답 모드)"}
+      </p>
+      {note && <p className="text-sm text-warn">{note}</p>}
+      <p className="text-xs text-muted">스피커로 들으면 울림이 생길 수 있으니 헤드폰 사용을 권장합니다.</p>
+      {SR && <label className="text-sm flex items-center gap-2"><input type="checkbox" checked={asr} onChange={(e) => toggleAsr(e.target.checked)} /> 자동 전사 사용 (말한 내용을 영어 텍스트로 변환해 채점)</label>}
+    </div>
+  );
+}
+
+/* ============ 정밀 피드백 엔진 (ETS 루브릭 관점 · 규칙 기반 휴리스틱) ============ */
+/* ---- 1) Reading / Listening 문항 유형 진단 ---- */
+const QTYPE_ADVICE = {
+  "Main Idea / Summary": "글 전체를 관통하는 핵심을 놓쳤습니다. 세부 정보 하나만 다룬 선택지(too narrow)나 지문에 없는 범위까지 넓힌 선택지(too broad)를 고르지 않았는지 확인하세요. 첫 문단·마지막 문장·반복 키워드를 묶어 한 문장으로 요약하는 연습이 효과적입니다.",
+  "Factual Information": "지문에 명시된 사실을 정확히 찾지 못했습니다. 선택지가 지문 문장을 '그대로' 쓰지 않고 paraphrase(동의어·구조 변경)하는 경우가 많으니, 질문 키워드 → 지문 위치 → 바꿔 쓴 표현 순서로 대조하세요.",
+  "Rhetorical Purpose": "'무엇을 말했는가'가 아니라 '왜 그 내용을 언급했는가'를 묻는 유형입니다. 해당 문장이 예시·대조·반박·정의·원인 설명 중 어떤 기능인지 앞뒤 문장과 함께 판단하는 훈련이 필요합니다.",
+  "Vocabulary": "문맥 속 의미 파악이 약합니다. 사전적 뜻이 아니라 해당 문장에서 쓰인 뜻을 앞뒤 단서(대조·예시·부연)로 추론하고, 대입해 보아 자연스러운 선택지를 고르세요.",
+  "Vocabulary / Word Form": "단어의 철자·품사 형태를 정확히 완성하지 못했습니다. 접미사(-ive, -tion, -ly 등)와 주변 문법 구조(품사 자리)를 함께 보고 빈칸을 채우세요.",
+  "Inference": "지문에 직접 쓰이지 않은 내용을 근거로 추론하는 유형입니다. 지문 근거가 있는 '한 단계' 추론만 정답이며, 과도한 확대 해석이나 상식 기반 선택지는 오답입니다.",
+  "Negative Factual": "'NOT / EXCEPT' 유형입니다. 선택지 3개가 지문에서 확인되고 1개만 틀린 구조이므로, 선택지를 하나씩 지문과 대조해 소거하세요.",
+  "Pragmatic Response": "대화의 의도(요청·제안·확인·사과 등)에 맞는 자연스러운 응답을 고르지 못했습니다. 단어가 겹치는 선택지는 함정인 경우가 많으니, 화자가 '무엇을 원하는지'를 먼저 파악하세요.",
+  "Detail (Listening)": "들은 내용에서 구체적 정보를 놓쳤습니다. 노트테이킹 시 숫자·이유·조건에 표시하고, 화자가 바꿔 말한 표현(paraphrase)을 의식하며 들으세요.",
+  "Main Idea / Purpose": "대화·강의의 주제와 목적 파악이 약합니다. 첫 두세 문장(목적 제시)과 마지막 정리 발언에 주목하세요."
+};
+function qType(item, sec) {
+  const q = (item.q || "").toLowerCase(), s = (item.skill || "").toLowerCase();
+  if (/word form|spelling/.test(s)) return "Vocabulary / Word Form";
+  if (/rhetorical/.test(s) || /^why does (the )?(author|speaker|professor|writer|instructor) (mention|use|refer|bring up|compare|include|cite|give)/.test(q) || /purpose of (mentioning|the (example|reference))/.test(q)) return "Rhetorical Purpose";
+  if (/closest in meaning|most similar in meaning|as used in the (passage|notice|email)/.test(q)) return "Vocabulary";
+  if (/\binfer|\bimply|implied|most likely|can be concluded/.test(q)) return "Inference";
+  if (/(not|except)\b.*(mention|true|state|discuss|list)|\bexcept\b/.test(q)) return "Negative Factual";
+  if (/summar|essential information/.test(q)) return "Main Idea / Summary";
+  if (/socially|response/.test(s)) return "Pragmatic Response";
+  if (/context/.test(s)) return /type of|kind of|purpose of|mainly|main (idea|purpose|topic)|who (issued|wrote|sent)|what is the (notice|email|message|passage)/.test(q) ? "Main Idea / Purpose" : (sec === "listening" ? "Detail (Listening)" : "Factual Information");
+  if (/detail|scanning/.test(s)) return sec === "listening" ? "Detail (Listening)" : "Factual Information";
+  if (/main idea|mainly about|main purpose|primary purpose|what problem|why (is|does|did) the (speaker|woman|man)|what is the (conversation|talk|lecture)|what are the speakers/.test(s + " " + q)) return /passage|mainly about/.test(q) && sec !== "listening" ? "Main Idea / Summary" : "Main Idea / Purpose";
+  return item.skill || "Factual Information";
+}
+function diagnoseRL(m, sec) {
+  if (!m || !m.items) return null;
+  const rows = m.items.map((x, i) => ({ i: i + 1, unit: x.unit, type: qType(x, sec), ok: !!x.ok, answered: x.answered !== false, q: x.q, pt: x.pt, ct: x.ct, scriptUsed: !!x.scriptUsed }));
+  const byType = {};
+  rows.forEach((r) => { const t = (byType[r.type] = byType[r.type] || { type: r.type, right: 0, total: 0 }); t.total++; if (r.ok) t.right++; });
+  const types = Object.values(byType);
+  const weak = types.filter((t) => t.right < t.total);
+  const summary = weak.length === 0
+    ? "모든 유형에서 정답을 맞혔습니다. 유형별 취약점이 감지되지 않았습니다."
+    : "감점 발생 유형: " + weak.map((t) => `${t.type} (${t.right}/${t.total})`).join(", ");
+  return { rows, types, weak, summary, advice: weak.map((t) => ({ type: t.type, text: QTYPE_ADVICE[t.type] || "해당 유형의 문제를 지문 근거 중심으로 다시 풀어 보세요." })) };
+}
+
+/* ---- 2) Listen and Repeat 단어 단위 비교 ---- */
+function diffRepeat(target, resp) {
+  const tw = (target || "").trim().split(/\s+/).filter(Boolean);
+  const nrm = (w) => w.toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z0-9'-]/g, "");
+  const rw = (resp || "").trim().split(/\s+/).filter(Boolean);
+  const a = tw.map(nrm), b = rw.map(nrm);
+  const dp = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--) dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const out = [], extra = []; let i = 0, j = 0;
+  while (i < a.length) {
+    if (j < b.length && a[i] === b[j]) { out.push({ w: tw[i], ok: true }); i++; j++; }
+    else if (j < b.length && dp[i][j + 1] >= dp[i + 1][j]) { extra.push(rw[j]); j++; }
+    else { out.push({ w: tw[i], ok: false }); i++; }
+  }
+  while (j < b.length) { extra.push(rw[j]); j++; }
+  const missing = out.filter((x) => !x.ok).map((x) => x.w);
+  return { tokens: out, missing, extra, matchRate: tw.length ? (tw.length - missing.length) / tw.length : 0 };
+}
+
+/* ---- 3) 필러 / 연결어 / 문법 / 표현 사전 ---- */
+const HESITATION = [[/\b(um+|umm+|erm+)\b/gi, "Um"], [/\b(uh+|uhh+)\b/gi, "Uh"], [/\b(er+|err+)\b/gi, "Er"], [/\b(ah+|ahh+)\b/gi, "Ah"], [/\b(hmm+|hm+)\b/gi, "Hmm"]];
+const DISC_FILLER = [[/\byou know\b/gi, "you know"], [/\bi mean\b/gi, "I mean"], [/(^|[,.]\s*)like\s*,/gi, "like"], [/\bkind of\b/gi, "kind of"], [/\bsort of\b/gi, "sort of"], [/\bbasically\b/gi, "basically"], [/\bor something\b/gi, "or something"], [/\band stuff\b/gi, "and stuff"], [/\bwhatever\b/gi, "whatever"]];
+const NATURAL_OPENERS = ["Well,", "Actually,", "Let me think…", "Honestly,", "To be honest,", "That's a good question —", "I'd say that…", "Personally,"];
+const TRANS = {
+  "순서·구조": ["first", "firstly", "second", "secondly", "third", "next", "then", "finally", "lastly", "to begin with", "in conclusion", "to sum up", "overall", "in short", "all in all"],
+  "추가": ["also", "in addition", "moreover", "furthermore", "besides", "additionally", "what's more", "another reason", "not only"],
+  "대조·양보": ["however", "but", "although", "though", "even though", "while", "whereas", "on the other hand", "nevertheless", "despite", "in spite of", "in contrast", "that said", "yet", "unlike"],
+  "원인·결과": ["because", "since", "so", "therefore", "as a result", "thus", "consequently", "due to", "that's why", "for this reason", "so that", "which means", "as a consequence"],
+  "예시": ["for example", "for instance", "such as", "in particular", "specifically", "to illustrate", "like"]
+};
+const TRANS_SAMPLE = {
+  "순서·구조": ["First of all, …", "To begin with, …", "In conclusion, …"],
+  "추가": ["In addition, …", "Moreover, …", "Another reason is that …"],
+  "대조·양보": ["However, …", "Although …, …", "On the other hand, …"],
+  "원인·결과": ["Therefore, …", "As a result, …", "This is why …"],
+  "예시": ["For example, …", "For instance, …", "Take … as an example."]
+};
+const TRANS_RE = {};
+Object.entries(TRANS).forEach(([cat, arr]) => arr.forEach((w) => { TRANS_RE[w] = new RegExp("(^|[^a-z'])" + w.replace(/'/g, "['’]") + "(?![a-z'])", "gi"); }));
+const CAT_BASIC = { and: "and", so: "so", but: "but", because: "because" };
+const CONN_UPGRADE = { and: "In addition, / Moreover, / as well as", so: "Therefore, / As a result, / which is why", but: "However, / Although … / While …", because: "since / due to / owing to", also: "In addition, / Furthermore,", then: "After that, / Subsequently," };
+
+const MISSP2 = { adress: "address", begining: "beginning", freind: "friend", recomend: "recommend", reccomend: "recommend", apparantly: "apparently", noticable: "noticeable", occassion: "occasion", publically: "publicly", truely: "truly", wether: "whether", sincerly: "sincerely", dissapoint: "disappoint", dissapointed: "disappointed", neccessary: "necessary", seperately: "separately", langauge: "language", diffrent: "different", usefull: "useful", benifit: "benefit", benifits: "benefits", knowlege: "knowledge", oppurtunity: "opportunity", opportunty: "opportunity", improvment: "improvement", managment: "management", sugest: "suggest", enought: "enough", thoughout: "throughout", alway: "always", definetly: "definitely", probaly: "probably", proffesor: "professor", profesor: "professor", assigment: "assignment", assignement: "assignment", scholarhip: "scholarship", libary: "library", pharmcy: "pharmacy" };
+
+const _ing = (v) => { v = v.toLowerCase(); if (v === "be") return "being"; if (/^(get|put|run|begin|stop)$/.test(v)) return v + v.slice(-1) + "ing"; if (/[^e]e$/.test(v)) return v.slice(0, -1) + "ing"; return v + "ing"; };
+const IRREG = "went|saw|came|took|ate|did|began|wrote|gave|ran|got|made|had|was|were";
+const NOT_NP = "(?!the\\b|a\\b|an\\b|my\\b|your\\b|his\\b|her\\b|our\\b|their\\b|this\\b|that\\b|these\\b|those\\b|me\\b|you\\b|him\\b|us\\b|them\\b)";
+/* sev 1 = 경미(오타성), 2 = 눈에 띄는 오류(루브릭 3점대 근거), 3 = 의미 전달을 방해하는 오류 */
+const GRAMMAR = [
+  { id: "sva", cat: "주어-동사 일치", sev: 2, re: /\b(he|she|it)\s+(don't|do not|are|were|have)\b/gi, msg: "3인칭 단수 주어에는 doesn't / is / was / has를 씁니다.", fix: (m) => m[2].toLowerCase().replace(/^don't$/, "doesn't").replace(/^do not$/, "does not").replace(/^are$/, "is").replace(/^were$/, "was").replace(/^have$/, "has"), pre: (m) => m[1] + " " },
+  { id: "sva-base", cat: "주어-동사 일치", sev: 2, re: /\b(he|she)\s+(help|make|need|want|like|say|think|cause|allow|give|show|take|become|provide|go|get|know|work|live|feel|play|keep|use|come|start|run|bring|try|ask|tell|see|do|have)\b/gi, msg: "3인칭 단수 현재 주어(he/she) 뒤 동사에는 -s/-es가 필요합니다.", fix: (m) => m[1] + " " + ({go:"goes",do:"does",have:"has"}[m[2].toLowerCase()] || (/(ss|sh|ch|x)$/i.test(m[2]) ? m[2] + "es" : m[2] + "s")), raw: true },
+  { id: "sva2", cat: "주어-동사 일치", sev: 2, re: /\b(you|we|they)\s+(was)\b/gi, msg: "you / we / they 뒤에는 were를 씁니다.", fix: () => "were", pre: (m) => m[1] + " " },
+  { id: "sva3", cat: "주어-동사 일치", sev: 2, re: /\b(i|you|we|they)\s+(is|does)\b/gi, msg: "주어와 be/do 동사의 수가 맞지 않습니다.", fix: (m) => (/^is$/i.test(m[2]) ? (/^i$/i.test(m[1]) ? "am" : "are") : "do"), pre: (m) => m[1] + " " },
+  { id: "sva4", cat: "주어-동사 일치", sev: 2, re: /\b(students|people|children|friends|teachers|neighbors|neighbours|residents|companies|researchers|parents)\s+(is|has|was|doesn't|does not)\b/gi, msg: "복수 주어에는 are / have / were / don't를 씁니다.", fix: (m) => ({ is: "are", has: "have", was: "were", "doesn't": "don't", "does not": "do not" }[m[2].toLowerCase()]), pre: (m) => m[1] + " " },
+  { id: "article-an", cat: "관사", sev: 1, re: /\ba\s+(?!uni|use|usu|eur|one\b|once|ubiq|util|ufo)([aeiou][a-z]*)/gi, msg: "모음 소리로 시작하는 단어 앞에는 an을 씁니다.", fix: (m) => "an " + m[1], raw: true },
+  { id: "article-a", cat: "관사", sev: 1, re: /\ban\s+(?!hour|honest|honou?r|heir)([^aeiou\s\d][a-z]*)/gi, msg: "자음 소리로 시작하는 단어 앞에는 a를 씁니다.", fix: (m) => "a " + m[1], raw: true },
+  { id: "article-miss", cat: "관사", sev: 2, re: /\b(have|had|has|got|face|faced|facing|solve|solved|raise|raised)\s+(problem|question|idea|issue|plan|suggestion|complaint|concern)\b(?!s)/gi, msg: "가산 단수 명사 앞에는 관사(a/an)가 필요합니다.", fix: (m) => m[1] + " a " + m[2], raw: true },
+  { id: "article-pl", cat: "관사", sev: 2, re: /\b(a|an)\s+(students|people|friends|problems|things|reasons|ways|ideas|neighbors|neighbours|years|days|hours|times|issues)\b/gi, msg: "a/an 뒤에는 복수 명사를 쓸 수 없습니다.", fix: (m) => m[2].replace(/s$/i, ""), pre: (m) => m[1] + " " },
+  { id: "plural", cat: "수(단·복수)", sev: 2, re: /\b(many|several|few|these|those|both)\s+(student|person|problem|reason|thing|way|time|day|year|example|place|child|friend|neighbor|neighbour|resident|point|benefit|issue|opinion)\b/gi, msg: "many / several / these 뒤에는 복수형 명사가 옵니다.", fix: (m) => (m[2].toLowerCase() === "person" ? "people" : m[2].toLowerCase() === "child" ? "children" : m[2] + "s"), pre: (m) => m[1] + " " },
+  { id: "much-many", cat: "수(단·복수)", sev: 1, re: /\bmuch\s+(students|people|problems|things|friends|reasons|neighbors|neighbours|examples|ways)\b/gi, msg: "셀 수 있는 복수 명사에는 many를 씁니다.", fix: (m) => "many " + m[1], raw: true },
+  { id: "uncount", cat: "불가산 명사", sev: 2, re: /\b(informations|advices|equipments|furnitures|homeworks|knowledges|researches|peoples|luggages|feedbacks|evidences)\b/gi, msg: "불가산 명사(또는 people)는 복수형 -s를 붙이지 않습니다.", fix: (m) => m[1].replace(/s$/i, ""), pre: () => "" },
+  { id: "prep-discuss", cat: "전치사·동사 결합", sev: 2, re: /\bdiscuss(ed|es|ing)?\s+about\b/gi, msg: "discuss는 타동사이므로 about 없이 목적어를 바로 씁니다.", fix: (m) => "discuss" + (m[1] || ""), raw: true },
+  { id: "prep-emphasize", cat: "전치사·동사 결합", sev: 2, re: /\bemphasi[sz]e(d|s)?\s+on\b/gi, msg: "emphasize는 on 없이 쓰는 타동사입니다 (emphasize the importance of …).", fix: (m) => "emphasize" + (m[1] || ""), raw: true },
+  { id: "prep-explain", cat: "전치사·동사 결합", sev: 2, re: /\bexplain\s+(me|us|him|her|them)\b/gi, msg: "explain 뒤 사람 목적어 앞에는 to가 필요합니다.", fix: (m) => "explain to " + m[1], raw: true },
+  { id: "prep-depend", cat: "전치사·동사 결합", sev: 2, re: /\bdepend(s|ed)?\s+of\b/gi, msg: "depend는 on과 함께 씁니다.", fix: (m) => "depend" + (m[1] || "") + " on", raw: true },
+  { id: "prep-lookfwd", cat: "전치사·동사 결합", sev: 2, re: /\blook(?:s|ing)?\s+forward\s+to\s+(hear|see|meet|speak|talk|receive|work|discuss|have|get|be|attend|join)\b/gi, msg: "look forward to 뒤에는 동명사(-ing)가 옵니다.", fix: (m) => m[0].replace(new RegExp(m[1] + "$", "i"), _ing(m[1])), raw: true },
+  { id: "prep-thank", cat: "전치사·동사 결합", sev: 1, re: /\bthank(?:s| you)\s+for\s+(help|invite|reply|answer|response)\b/gi, msg: "thank you for 뒤에는 소유격/관사 + 명사가 자연스럽습니다.", fix: (m) => "thank you for your " + m[1], raw: true },
+  { id: "gerund", cat: "동사 형태", sev: 2, re: new RegExp("\\b(enjoy|avoid|finish|mind|admit|deny)(s|ed)?\\s+to\\s+" + NOT_NP + "([a-z]+)\\b", "gi"), msg: "이 동사 뒤에는 to부정사가 아니라 동명사(-ing)가 옵니다.", fix: (m) => m[1] + (m[2] || "") + " " + _ing(m[3]), raw: true },
+  { id: "perfect", cat: "시제·동사 형태", sev: 2, re: new RegExp("\\b(have|has|had)\\s+(went|saw|came|took|ate|did|began|wrote|gave|ran)\\b", "gi"), msg: "have/has/had 뒤에는 과거분사를 씁니다 (gone, seen, come, taken, eaten, done …).", fix: (m) => m[1] + " " + ({ went: "gone", saw: "seen", came: "come", took: "taken", ate: "eaten", did: "done", began: "begun", wrote: "written", gave: "given", ran: "run" }[m[2].toLowerCase()]), raw: true },
+  { id: "aux-past", cat: "시제·동사 형태", sev: 2, re: /\b(didn't|did not|doesn't|does not|don't|do not|to|can|could|should|would|will|must|may|might)\s+(went|saw|came|took|ate|made|gave|goes|has|does|makes|takes|gets|comes)\b/gi, msg: "조동사/to/do 뒤에는 동사원형을 씁니다.", fix: (m) => m[1] + " " + ({ went: "go", saw: "see", came: "come", took: "take", ate: "eat", made: "make", gave: "give", goes: "go", has: "have", does: "do", makes: "make", takes: "take", gets: "get", comes: "come" }[m[2].toLowerCase()]), raw: true },
+  { id: "past-marker", cat: "시제·동사 형태", sev: 2, re: /\b(yesterday|last (?:night|week|month|year)),?\s+(i|we|they|he|she)\s+(go|buy|see|make|take|get|come|have|eat|meet)\b/gi, msg: "과거를 나타내는 시간 표현과 함께 쓰이는 동사는 과거형이어야 합니다.", fix: (m) => m[1] + " " + m[2] + " " + ({ go: "went", buy: "bought", see: "saw", make: "made", take: "took", get: "got", come: "came", have: "had", eat: "ate", meet: "met" }[m[3].toLowerCase()]), raw: true },
+  { id: "am-agree", cat: "동사 형태", sev: 2, re: /\b(am|is|are)\s+(agree|disagree)\b/gi, msg: "agree/disagree는 일반동사입니다 (I am agree ✗ → I agree ✓).", fix: (m) => m[2], raw: true },
+  { id: "can-able", cat: "동사 형태", sev: 2, re: /\b(can|could|will)\s+able\s+to\b/gi, msg: "can과 be able to를 함께 쓰지 않습니다.", fix: (m) => m[1] + " " , raw: true, raw2: (m) => m[1] },
+  { id: "morebetter", cat: "비교급", sev: 2, re: /\bmore\s+(better|worse|easier|harder|bigger|faster|cheaper|healthier|happier|larger|smaller|higher|lower|older)\b/gi, msg: "-er 비교급 앞에는 more를 붙이지 않습니다.", fix: (m) => m[1], raw: true },
+  { id: "because-of", cat: "접속사·전치사", sev: 2, re: /\bbecause of\s+(?:i|he|she|we|they|it|there|this|that)\s+(?:am|is|are|was|were|have|has|had|can|will|do|does|did)\b/gi, msg: "because of 뒤에는 명사(구)가, 절(주어+동사) 앞에는 because가 옵니다.", fix: (m) => m[0].replace(/because of/i, "because"), raw: true },
+  { id: "although-but", cat: "접속사 중복", sev: 2, re: /\b((?:although|though|even though)\b[^.!?]{3,90}),\s*but\b/gi, msg: "although/though와 but을 한 문장에서 같이 쓰지 않습니다.", fix: (m) => m[1] + ",", raw: true },
+  { id: "because-so", cat: "접속사 중복", sev: 2, re: /\b(because\b[^.!?]{3,90}),\s*so\b/gi, msg: "because와 so를 한 문장에서 같이 쓰지 않습니다.", fix: (m) => m[1] + ",", raw: true },
+  { id: "redundant-opinion", cat: "중복 표현", sev: 1, re: /\bin my (opinion|view),?\s+i\s+(think|believe|feel)\b/gi, msg: "'in my opinion'과 'I think'는 같은 기능이라 하나만 씁니다.", fix: (m) => "In my " + m[1] + ",", raw: true },
+  { id: "according-me", cat: "관용 표현", sev: 2, re: /\baccording to me\b/gi, msg: "'according to me'는 어색합니다. 'In my opinion/view'를 쓰세요.", fix: () => "in my opinion", raw: true },
+  { id: "collocation", cat: "어휘 호응(Collocation)", sev: 2, re: /\b(do|did|does|doing)\s+(a\s+)?(mistakes?|decisions?)\b/gi, msg: "mistake / decision은 make와 호응합니다.", fix: (m) => "make " + (m[2] || "a ") + m[3], raw: true },
+  { id: "collocation2", cat: "어휘 호응(Collocation)", sev: 2, re: /\bmake(?:s|ing)?\s+(my\s+|the\s+)?homework\b/gi, msg: "homework는 do와 호응합니다 (do homework).", fix: (m) => "do " + (m[1] || "") + "homework", raw: true },
+  { id: "informal", cat: "비격식 표현(Register)", sev: 1, re: /\b(gonna|wanna|gotta|kinda|sorta|lemme|gimme|ain't|ok|okay|guys|stuff)\b/gi, msg: "격식이 필요한 글에서는 구어체·축약 표현을 피합니다.", fix: (m) => ({ gonna: "going to", wanna: "want to", gotta: "have to", kinda: "somewhat", sorta: "somewhat", lemme: "let me", gimme: "give me", "ain't": "is not", ok: "acceptable", okay: "acceptable", guys: "people", stuff: "things" }[m[1].toLowerCase()]), pre: () => "", writingOnly: true }
+];
+
+/* 업그레이드 가능한 평이한 표현 → 고득점 대체 표현 */
+const UPGRADES = [
+  [/\b(very|really|so)\s+important\b/gi, "very important", "crucial / essential / vital"],
+  [/\b(very|really|so)\s+(good|nice|great)\b/gi, "very good", "highly beneficial / remarkably effective"],
+  [/\b(very|really|so)\s+(bad|terrible|awful)\b/gi, "very bad", "detrimental / severely harmful"],
+  [/\b(very|really)\s+(big|large)\b/gi, "very big", "substantial / significant"],
+  [/\b(very|really)\s+(hard|difficult)\b/gi, "very hard", "challenging / demanding"],
+  [/\b(a lot of|lots of)\b/gi, "a lot of", "numerous / a great deal of / a wide range of"],
+  [/\bbig problem\b/gi, "big problem", "serious issue / pressing concern"],
+  [/\bI want to say\b/gi, "I want to say", "I would like to point out / I would emphasize that"],
+  [/\bmany people\b/gi, "many people", "a significant number of people / many individuals"],
+  [/\bgood\b/gi, "good", "beneficial / valuable / effective (구체적 형용사)", 2],
+  [/\bbad\b/gi, "bad", "harmful / problematic / counterproductive", 2],
+  [/\bthings?\b/gi, "thing(s)", "factors / aspects / elements (구체 명사로)", 2],
+  [/\bget\b/gi, "get", "obtain / gain / receive / become", 2],
+  [/\bI think\b/gi, "I think", "In my view, / From my perspective, / I would argue that", 3],
+  [/\bI like\b/gi, "I like", "I am drawn to / I prefer / I appreciate", 3],
+  [/\bshow(s)?\b/gi, "show", "demonstrate / illustrate / indicate", 3]
+];
+/* 잘 쓴 표현(Key Expressions) 탐지 */
+const STRONG = [
+  /\bin my (view|opinion)\b/i, /\bfrom my perspective\b/i, /\bI would argue (that)?\b/i, /\bon the other hand\b/i, /\bthat said\b/i, /\bas a result\b/i, /\bfor instance\b/i, /\bto illustrate\b/i,
+  /\bnot only\b[^.!?]{3,80}\bbut also\b/i, /\bwhereas\b/i, /\bwhile\b[^.!?]{3,60}\b(may|might|can)\b/i, /\bI would (really )?appreciate it if\b/i, /\bI was wondering (if|whether)\b/i, /\bwould it be possible\b/i,
+  /\bI am writing to\b/i, /\bI look forward to (hearing|seeing|meeting|receiving|working)\b/i, /\bI would be (grateful|happy|delighted)\b/i, /\ba wide range of\b/i, /\bplays? an? (crucial|vital|key|significant|important) role\b/i,
+  /\boutweigh/i, /\bat the (cost|expense) of\b/i, /\bin the long run\b/i, /\bfirsthand\b/i, /\btangible\b/i, /\bmitigate/i, /\bdespite\b/i, /\bin contrast\b/i, /\bit is (essential|crucial|worth noting|undeniable) that\b/i, /\bwhich (means|allows|helps|enables)\b/i,
+  /\bI (completely|partially|strongly|respectfully) (agree|disagree)\b/i, /\bI see (your|his|her|\w+'s) point\b/i, /\bhave a (valid|strong|good) point\b/i, /\bcould you (please )?(look into|address|let me know)\b/i, /\bI would like to (request|inquire|express)\b/i, /\bin addition to\b/i, /\bas well as\b/i
+];
+const KEY_EXPR = {
+  disc: [["입장 제시", "I strongly agree with … because …  /  I would argue that …"], ["동료 의견에 반응", "I see [Name]'s point that …, but …  /  While [Name] argues …, I believe …"], ["이유 확장", "This is because …  /  This not only … but also …"], ["예시 제시", "For instance, … /  A case in point is …"], ["마무리", "In the long run, … /  All things considered, …"]],
+  email: [["목적 제시", "I am writing to … /  I am writing regarding …"], ["감사·공감", "I truly appreciate … /  Thank you for …"], ["문제 설명", "Unfortunately, … /  I have been experiencing … since …"], ["정중한 요청", "Could you please look into …? /  I would appreciate it if you could …"], ["맺음말", "I look forward to hearing from you. /  Thank you for your time and consideration."]],
+  spk: [["답변 시작(필러 대체)", "Well, … /  Actually, … /  Honestly, … /  To be honest, …"], ["이유 제시", "The main reason is that … /  That's mainly because …"], ["구체적 경험", "For example, last month I … /  In my own experience, …"], ["생각 정리", "What I mean is … /  In other words, …"], ["마무리", "So overall, … /  That's why I believe …"]]
+};
+
+/* ---- 4) 텍스트 정밀 분석 ---- */
+const _words = (t) => (t || "").trim().split(/\s+/).filter(Boolean);
+const _STOPX = new Set("a an the to of in on at for and or is are was were be been being do does did it its this that these those with you your we our can i my me he she they them his her their will would should could have has had not so but if as by from about than then there here what which who when where how also just very more most some any all one".split(" "));
+function splitSentences(t) { return (t || "").replace(/\s+/g, " ").split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean); }
+function _ctx(text, idx, len) { const a = Math.max(0, idx - 28), b = Math.min(text.length, idx + len + 28); return (a > 0 ? "…" : "") + text.slice(a, b).trim() + (b < text.length ? "…" : ""); }
+function _count(text, re) { re.lastIndex = 0; return (text.match(re) || []).length; }
+
+function analyzeText(text, mode, opts) {
+  opts = opts || {};
+  const isSpeech = mode === "spk";
+  const t = (text || "").trim();
+  const w = _words(t), n = w.length;
+  const sents = splitSentences(t);
+  const A = { mode, n, sentCount: sents.length, empty: n === 0 };
+  if (n === 0) return A;
+  const lens = sents.map((s) => _words(s).length);
+  const avg = lens.reduce((a, b) => a + b, 0) / Math.max(1, lens.length);
+  const sd = Math.sqrt(lens.reduce((a, b) => a + (b - avg) * (b - avg), 0) / Math.max(1, lens.length));
+  const toks = (t.toLowerCase().match(/[a-z']+/g) || []);
+  const uniq = new Set(toks).size / Math.max(1, toks.length);
+
+  /* (1) 분량 */
+  const T = mode === "disc" ? { min: 100, ok: 120, hi: 220, label: "Academic Discussion", unit: "단어" } : mode === "email" ? { min: 70, ok: 90, hi: 160, label: "Email", unit: "단어" } : { min: 55, ok: 75, hi: 130, label: "Interview 45초", unit: "단어" };
+  let lenStatus, lenMsg;
+  if (n < T.min) { lenStatus = "bad"; lenMsg = `${n}${T.unit}: 권장 최소 ${T.min}${T.unit}에 ${T.min - n}${T.unit} 부족합니다. ${mode === "disc" ? "Discussion은 100단어 미만이면 elaboration 부족으로 3점 이하로 평가될 가능성이 큽니다." : "elaboration(이유·예시)이 부족해 루브릭상 3점대로 평가될 수 있습니다."}`; }
+  else if (n < T.ok) { lenStatus = "warn"; lenMsg = `${n}${T.unit}: 최소 기준(${T.min})은 충족했지만 4–5점대에 필요한 충분한 elaboration(${T.ok}${T.unit}+)에는 약간 부족합니다. 이유 1개 + 구체적 예시 1개를 보강하세요.`; }
+  else if (n <= T.hi) { lenStatus = "good"; lenMsg = `${n}${T.unit}: 목표 분량(${T.ok}–${T.hi}${T.unit})을 충족했습니다.`; }
+  else { lenStatus = "warn"; lenMsg = `${n}${T.unit}: 분량은 충분하지만 다소 깁니다. 분량 자체는 감점 요인이 아니나 시간 안에 오류 점검할 여유가 줄어듭니다.`; }
+  A.length = { status: lenStatus, msg: lenMsg, target: `${T.ok}–${T.hi}`, min: T.min };
+
+  /* (2) 필러 */
+  const hes = [], dis = [];
+  HESITATION.forEach(([re, label]) => { re.lastIndex = 0; let m; while ((m = re.exec(t))) hes.push({ label, idx: m.index, len: m[0].length, ctx: _ctx(t, m.index, m[0].length) }); });
+  DISC_FILLER.forEach(([re, label]) => { re.lastIndex = 0; let m; while ((m = re.exec(t))) dis.push({ label, idx: m.index, len: m[0].length, ctx: _ctx(t, m.index, m[0].length) }); });
+  const natural = {}; ["well", "actually", "honestly", "to be honest", "let me think", "personally"].forEach((k) => { const c = _count(t, new RegExp("\\b" + k + "\\b", "gi")); if (c) natural[k] = c; });
+  const fillTotal = hes.length + dis.length, per100 = fillTotal / (n / 100);
+  let fStatus = "good", fMsg;
+  if (!isSpeech) {
+    fStatus = fillTotal ? "warn" : "good";
+    fMsg = fillTotal ? `글쓰기에 구어 추임새/비격식 표현이 ${fillTotal}회 있습니다 (${[...hes, ...dis].slice(0, 4).map((x) => x.label).join(", ")}). 쓰기 답안에서는 모두 삭제하거나 격식 표현으로 바꿉니다.` : "구어체 추임새가 없습니다.";
+  } else if (fillTotal === 0) { fMsg = "필러가 감지되지 않았습니다. 휴지가 필요한 곳에서는 침묵보다 Well, / Actually, 같은 자연스러운 연결 표현으로 채우면 더 매끄럽습니다."; }
+  else if (per100 <= 3) { fStatus = "warn"; fMsg = `필러 ${fillTotal}회 (100단어당 ${per100.toFixed(1)}회): 흐름에 큰 지장은 없지만 아래 표현으로 교체하면 4–5점대 '자연스러운 pause'에 가까워집니다.`; }
+  else { fStatus = "bad"; fMsg = `필러 ${fillTotal}회 (100단어당 ${per100.toFixed(1)}회): 필러가 잦아 흐름이 끊깁니다. 루브릭 3점 항목 'filler words are frequent'에 해당할 수 있습니다.`; }
+  const rep = []; { const re = /\b(\w+)(\s+\1\b)+/gi; let m; while ((m = re.exec(t))) { if (!/^(that|had|very|so)$/i.test(m[1]) || m[1].toLowerCase() === "so") rep.push({ w: m[0], ctx: _ctx(t, m.index, m[0].length) }); } }
+  const pauses = _count(t, /(\.\.\.|…|—|--)/g);
+  A.fillers = { status: fStatus, msg: fMsg, hes, dis, total: fillTotal, per100, natural, repeats: rep, pauses, guide: isSpeech && fillTotal > 0 ? NATURAL_OPENERS : [] };
+
+  /* (3) 연결어 */
+  const cats = {}; const used = {};
+  Object.entries(TRANS).forEach(([cat, arr]) => arr.forEach((word) => { const re = TRANS_RE[word]; re.lastIndex = 0; const c = (t.match(re) || []).length; if (c) { (cats[cat] = cats[cat] || []).push({ w: word, c }); used[word] = c; } }));
+  const catCount = Object.keys(cats).length, uniqConn = Object.keys(used).length, totalConn = Object.values(used).reduce((a, b) => a + b, 0);
+  const basic = {}; ["and", "so", "but", "because"].forEach((k) => { const c = _count(t, new RegExp("(^|[^a-z'])" + k + "(?![a-z'])", "gi")); if (c) basic[k] = c; });
+  const overuse = Object.entries(Object.assign({}, used, basic)).filter(([k, c]) => c >= (isSpeech ? 4 : 3) || (k === "and" && c / n > 0.05)).map(([k, c]) => ({ w: k, c, alt: CONN_UPGRADE[k] || "" }));
+  const missingCats = Object.keys(TRANS).filter((c) => !cats[c]);
+  const advanced = ["however", "moreover", "furthermore", "therefore", "as a result", "in addition", "on the other hand", "nevertheless", "whereas", "that said", "consequently", "for instance", "in contrast", "despite", "although"].filter((k) => used[k]);
+  let cStatus, cMsg;
+  const minCats = isSpeech ? 2 : 3;
+  if (catCount >= minCats + 1 && uniqConn >= (isSpeech ? 4 : 6)) { cStatus = "good"; cMsg = `${catCount}개 기능군, ${uniqConn}종의 연결어를 사용해 논리 전개가 다채롭습니다.`; }
+  else if (catCount >= minCats && uniqConn >= (isSpeech ? 3 : 4)) { cStatus = "warn"; cMsg = `${catCount}개 기능군, ${uniqConn}종: 기본 연결은 되어 있으나 ${missingCats.slice(0, 2).join("·") || "고급 연결어"} 기능이 빠져 있어 4점 항목의 'sentence-level connectors'에 약간 못 미칩니다.`; }
+  else { cStatus = "bad"; cMsg = `${catCount}개 기능군, ${uniqConn}종: 연결어가 부족해 문장이 나열식으로 이어집니다. 루브릭 4점 이하의 'lacks effective sentence-level connectors / 연결 부족'에 해당합니다.`; }
+  A.transitions = { status: cStatus, msg: cMsg, cats, catCount, uniqConn, totalConn, overuse, missingCats: missingCats.map((c) => ({ cat: c, samples: TRANS_SAMPLE[c] })), advanced, basic };
+
+  /* (4) 문법 */
+  const grammar = [];
+  GRAMMAR.forEach((r) => {
+    if (r.writingOnly && isSpeech) return;
+    r.re.lastIndex = 0; let m;
+    while ((m = r.re.exec(t))) {
+      if (m[0] === "") { r.re.lastIndex++; continue; }
+      const sStart = Math.max(t.lastIndexOf(". ", m.index) + 2, t.lastIndexOf("? ", m.index) + 2, t.lastIndexOf("! ", m.index) + 2, 0);
+      let sEnd = t.slice(m.index).search(/[.!?](\s|$)/); sEnd = sEnd < 0 ? t.length : m.index + sEnd + 1;
+      const before = t.slice(sStart, m.index), after = t.slice(m.index + m[0].length, sEnd);
+      let repl; try { repl = r.fix(m); } catch (e) { repl = ""; }
+      if (r.pre && !r.raw) repl = r.pre(m) + repl;
+      if (r.raw2) repl = r.raw2(m);
+      grammar.push({ id: r.id, cat: r.cat, sev: r.sev, msg: r.msg, wrong: m[0].trim(), right: String(repl).trim(), before: (sStart > 0 ? "" : "") + before.trim(), after: after.trim(), at: m.index });
+    }
+  });
+  /* 철자 */
+  const spellMap = Object.assign({}, MISSP2, typeof MISSPELL !== "undefined" ? MISSPELL : {});
+  if (!isSpeech) {
+    const seen = new Set();
+    (t.match(/[A-Za-z']+/g) || []).forEach((tok) => { const k = tok.toLowerCase(); if (spellMap[k] && spellMap[k] !== k && !seen.has(k)) { seen.add(k); grammar.push({ id: "spell", cat: "철자(Spelling)", sev: 1, msg: "철자 오류입니다. 시험에서는 흔한 오타로 간주되어 감점이 작지만 누적되면 영향을 줍니다.", wrong: tok, right: spellMap[k], before: "", after: "", at: t.toLowerCase().indexOf(k) }); } });
+    if (/(^|[\s(])i(?=[\s,.'!?])/.test(t.replace(/I'/g, "x"))) grammar.push({ id: "cap-i", cat: "대소문자", sev: 1, msg: "대명사 I는 항상 대문자입니다.", wrong: "i", right: "I", before: "", after: "", at: 0 });
+    const low = sents.filter((s) => /^[a-z]/.test(s)).length; if (low) grammar.push({ id: "cap-sent", cat: "대소문자", sev: 1, msg: `문장 첫 글자 소문자 ${low}곳 — 문장은 대문자로 시작합니다.`, wrong: "(소문자 시작)", right: "(대문자 시작)", before: "", after: "", at: 0 });
+  }
+  /* 문장 구조: comma splice / fragment */
+  const structure = [];
+  sents.forEach((s) => {
+    const wc = _words(s).length;
+    if (wc >= 12 && !/^(if|when|although|though|because|while|since|after|before|as|even|once|unless|whereas|however|moreover|therefore|for example|for instance|in addition|first|second|finally|overall|in my|from my|personally|honestly|actually|well|also|then|so|but|and|yes|no|thank|dear|hi|hello)\b/i.test(s)) {
+      const m = s.match(/^([^,;]{25,}),\s+(I|we|they|he|she|it)\s+(am|is|are|was|were|have|has|had|think|believe|feel|will|can|do|did|would)\b/);
+      if (m && /\b(is|are|was|were|am|have|has|had|do|does|did|can|will|would|should|think|believe|feel|like|love|need|want|go|get|make)\b/i.test(m[1]) && !/\b(and|but|so|because|which|who|that)\s*$/i.test(m[1])) structure.push({ type: "run-on", cat: "문장 연결(Comma splice)", sev: 2, msg: "접속사 없이 쉼표만으로 두 개의 독립절을 이었을 가능성이 있습니다. 마침표/세미콜론으로 나누거나 접속사(and, but, so)를 넣으세요.", s });
+    }
+    if (wc < 9 && /^(because|although|though|which|who|whereas|while)\b/i.test(s) && !/,/.test(s)) structure.push({ type: "fragment", cat: "문장 조각(Fragment)", sev: 2, msg: "종속절만으로 끝난 불완전한 문장입니다. 주절과 연결하세요.", s });
+    if (wc > 38) structure.push({ type: "long", cat: "지나치게 긴 문장", sev: 1, msg: `${wc}단어의 긴 문장입니다. 2개 문장으로 나누면 문법 오류 위험이 줄고 명확성이 올라갑니다.`, s });
+  });
+  const dedup = []; const seenG = new Set();
+  grammar.sort((a, b) => a.at - b.at).forEach((g) => { const k = g.wrong.toLowerCase() + "|" + g.right.toLowerCase(); if (!seenG.has(k)) { seenG.add(k); dedup.push(g); } });
+  const gSev = dedup.reduce((a, g) => a + g.sev, 0) + structure.reduce((a, g) => a + g.sev, 0);
+  const major = dedup.filter((g) => g.sev >= 2).length + structure.filter((g) => g.sev >= 2).length;
+  const gPer100 = gSev / (n / 100);
+  let gStatus, gMsg;
+  if (gSev === 0) { gStatus = "good"; gMsg = "자동 탐지된 문법·어법 오류가 없습니다. (자동 점검의 한계가 있으니 교사가 최종 확인하세요.)"; }
+  else if (gPer100 <= 3) { gStatus = "good"; gMsg = `경미한 오류 ${dedup.length + structure.length}건: 루브릭 4–5점의 'few / almost no errors' 범위입니다.`; }
+  else if (gPer100 <= 7) { gStatus = "warn"; gMsg = `오류 ${dedup.length + structure.length}건 (눈에 띄는 오류 ${major}건): 루브릭 3점 'some noticeable lexical and grammatical errors'에 해당할 수 있어 이 부분이 4점 이상 도약을 막고 있습니다.`; }
+  else { gStatus = "bad"; gMsg = `오류 ${dedup.length + structure.length}건 (눈에 띄는 오류 ${major}건): 오류가 누적되어 루브릭 2–3점 'accumulation of errors'에 해당할 수 있습니다. 최우선 교정 대상입니다.`; }
+  A.grammar = { status: gStatus, msg: gMsg, items: dedup, structure, major, sevPoints: gSev, per100: gPer100 };
+
+  /* (5) 핵심 표현 */
+  const strong = []; STRONG.forEach((re) => { const m = t.match(re); if (m) strong.push(m[0].trim()); });
+  const ups = []; UPGRADES.forEach(([re, label, alt, minC]) => { re.lastIndex = 0; const c = (t.match(re) || []).length; if (c >= (minC || 1)) ups.push({ from: label, to: alt, c }); });
+  A.expr = { strong, upgrades: ups.slice(0, 7), recommend: KEY_EXPR[mode] || KEY_EXPR.disc, status: strong.length >= 3 ? "good" : strong.length >= 1 ? "warn" : "bad", msg: strong.length >= 3 ? `${strong.length}개의 고급 표현이 확인됩니다.` : strong.length >= 1 ? `고급 표현이 ${strong.length}개로 적습니다. 아래 추천 표현을 2–3개 더 넣어 보세요.` : "고급·관용 표현이 거의 없어 'precise, idiomatic word choice(5점)'에 못 미칩니다. 아래 Key Expressions를 암기해 활용하세요." };
+
+  /* (6) 유창성 · 응집성 */
+  const starters = {}; sents.forEach((s) => { const k = _words(s).slice(0, 2).join(" ").toLowerCase().replace(/[^a-z' ]/g, ""); if (k) starters[k] = (starters[k] || 0) + 1; });
+  const repStart = Object.entries(starters).filter(([, c]) => c >= 3).map(([k, c]) => ({ k, c }));
+  const content = toks.filter((x) => x.length > 3 && !_STOPX.has(x)); const freq = {}; content.forEach((x) => { freq[x] = (freq[x] || 0) + 1; });
+  const repWords = Object.entries(freq).filter(([, c]) => c >= (isSpeech ? 4 : 4)).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([k, c]) => ({ k, c }));
+  const subCount = _count(t, /\b(although|because|which|while|since|that|if|when|whereas|even though|so that|who|whose|unless|though)\b/gi);
+  const subPerSent = subCount / Math.max(1, sents.length);
+  const shortRatio = lens.filter((x) => x <= 6).length / Math.max(1, lens.length);
+  const fl = [];
+  const avgGood = isSpeech ? [9, 22] : [13, 26];
+  if (avg < avgGood[0]) fl.push({ status: "warn", msg: `평균 문장 길이 ${avg.toFixed(1)}단어로 짧습니다. 단문 위주면 루브릭의 'syntactic variety'에서 감점됩니다. 이유절(because), 관계절(which), 양보절(although)로 확장하세요.` });
+  else if (avg > avgGood[1] + 6) fl.push({ status: "warn", msg: `평균 문장 길이 ${avg.toFixed(1)}단어로 깁니다. 문장 하나에 정보가 몰려 명확성이 떨어질 수 있습니다.` });
+  else fl.push({ status: "good", msg: `평균 문장 길이 ${avg.toFixed(1)}단어: 적절한 범위입니다.` });
+  if (sents.length >= 4 && sd < 3.5) fl.push({ status: "warn", msg: `문장 길이 편차가 작아(표준편차 ${sd.toFixed(1)}) 리듬이 단조롭습니다. 짧은 문장과 긴 문장을 섞어 쓰세요.` });
+  if (subPerSent < 0.4 && n >= 40) fl.push({ status: "warn", msg: `종속절 사용이 ${subCount}회(문장당 ${subPerSent.toFixed(2)})로 적어 구문 다양성이 낮습니다. 5점 기준의 'effective syntactic variety'를 위해 문장당 평균 0.6회 이상을 목표로 하세요.` });
+  else if (n >= 40) fl.push({ status: "good", msg: `종속절·관계절 ${subCount}회: 구문 다양성이 양호합니다.` });
+  if (repStart.length) fl.push({ status: "warn", msg: `문장 시작이 반복됩니다: ${repStart.map((x) => `"${x.k}" ×${x.c}`).join(", ")}. 주어와 구조를 바꿔 시작하세요.` });
+  if (repWords.length) fl.push({ status: "warn", msg: `같은 단어가 반복됩니다: ${repWords.map((x) => `${x.k} ×${x.c}`).join(", ")}. 동의어·대명사로 바꿔 어휘 폭을 넓히세요.` });
+  if (uniq < (n < 80 ? 0.55 : 0.5)) fl.push({ status: "warn", msg: `어휘 다양성 지수(TTR) ${uniq.toFixed(2)}: 어휘 폭이 제한적으로 보입니다.` });
+  if (isSpeech) {
+    const wpm = n / 0.75; A.pace = { wpm, window: 45 };
+    if (n > 0) fl.push({ status: wpm >= 100 ? "good" : wpm >= 75 ? "warn" : "bad", msg: `45초 응답창 기준 평균 ${Math.round(wpm)}단어/분: ${wpm >= 100 ? "대화 속도를 잘 유지했습니다." : wpm >= 75 ? "다소 느립니다. 침묵 구간을 줄이고 마지막 문장까지 말해 보세요." : "휴지가 길거나 답변이 짧아 'choppy pace'로 평가될 수 있습니다."}` });
+    if (rep.length) fl.push({ status: "warn", msg: `단어 반복(self-repetition/false start) ${rep.length}회: ${rep.slice(0, 3).map((x) => `"${x.w}"`).join(", ")}. 말을 시작하기 전 첫 문장 구조를 머릿속에서 완성하세요.` });
+    if (pauses) fl.push({ status: "warn", msg: `전사 텍스트에 휴지 표시(…, —) ${pauses}회: 긴 pause를 의미합니다.` });
+  }
+  /* 구조 점검 */
+  const struct = [];
+  const S0 = sents[0] || "", SL = sents[sents.length - 1] || "";
+  if (mode === "disc") {
+    struct.push({ ok: /(i (think|believe|agree|disagree|feel|would argue)|in my (opinion|view)|from my perspective|should)/i.test(S0 + " " + (sents[1] || "")), label: "도입부에서 입장을 분명히 밝혔는가" });
+    struct.push({ ok: /(because|since|reason|due to|as )/i.test(t), label: "이유(Reason)를 제시했는가" });
+    struct.push({ ok: /(for example|for instance|such as|imagine|take |consider )/i.test(t), label: "구체적 예시(Example)를 들었는가" });
+    struct.push({ ok: /(however|while|although|on the other hand|that said|but )/i.test(t), label: "반대 입장·양보(Concession)를 고려했는가" });
+    struct.push({ ok: /(in conclusion|overall|to sum up|all in all|in short|ultimately|therefore|that is why|this is why)/i.test(SL + " " + (sents[sents.length - 2] || "")), label: "마무리 문장으로 논지를 정리했는가" });
+  } else if (mode === "email") {
+    struct.push({ ok: /^(dear|hi|hello|good (morning|afternoon))/i.test(t), label: "적절한 인사말(Dear …)로 시작했는가" });
+    struct.push({ ok: /(i am writing|i'm writing|writing to|i would like to|i wanted to|regarding)/i.test(t), label: "작성 목적을 명확히 밝혔는가" });
+    struct.push({ ok: /(could you|would you|i would appreciate|please|i was wondering|request)/i.test(t), label: "정중한 요청 표현(Could you …)을 사용했는가" });
+    struct.push({ ok: /(thank|look forward|appreciate your)/i.test(SL + " " + (sents[sents.length - 2] || "")), label: "감사/기대 표현으로 마무리했는가" });
+    struct.push({ ok: /(sincerely|regards|best|yours)[,\s]*\w*\s*$/i.test(t) || /(sincerely|regards|best wishes|yours)/i.test(t), label: "맺음말(Sincerely, …)을 썼는가" });
+  } else {
+    struct.push({ ok: /(i (think|believe|agree|disagree|prefer|would|usually|often|feel)|in my|personally|honestly|well|actually)/i.test(S0 + " " + (sents[1] || "")), label: "첫 문장에서 질문에 바로 답했는가" });
+    struct.push({ ok: /(because|since|the (main|biggest|first) reason|that's why|due to)/i.test(t), label: "이유를 제시했는가" });
+    struct.push({ ok: /(for example|for instance|such as|last (week|month|year)|when i|once|in my (own )?experience)/i.test(t), label: "구체적 예시·경험을 들었는가" });
+    struct.push({ ok: /(so |overall|that's why|in short|all in all|therefore)/i.test(SL), label: "마지막 문장으로 정리했는가" });
+  }
+  const sOk = struct.filter((x) => x.ok).length;
+  const cohStatus = sOk >= struct.length - 1 && fl.filter((x) => x.status === "bad").length === 0 ? (fl.filter((x) => x.status === "warn").length <= 1 ? "good" : "warn") : sOk >= Math.ceil(struct.length / 2) ? "warn" : "bad";
+  A.flow = { status: cohStatus, items: fl, struct, avgLen: avg, sd, ttr: uniq, subCount, subPerSent, msg: cohStatus === "good" ? "문장 구조와 논리 전개가 안정적입니다." : cohStatus === "warn" ? "전개의 뼈대는 있으나 일부 요소(구조·구문 다양성)가 보강 필요합니다." : "전개 구조가 불완전합니다. '입장 → 이유 → 예시 → 정리'의 기본 틀을 먼저 채우세요." };
+
+  /* (7) 감점 요인 종합 (루브릭 연결) */
+  const D = [];
+  const RUB = {
+    disc: { elab: "5점: 'Relevant and well-elaborated explanations, exemplifications and/or details' / 3점: 'part of an explanation, example or detail may be missing'", lang: "5점: 'precise, idiomatic word choice · almost no errors' / 3점: 'noticeable lexical and grammatical errors'", syn: "5점: 'effective use of a variety of syntactic structures'" },
+    email: { elab: "5점: 'Elaboration that effectively supports the communicative purpose' / 3점: 'partially supports'", lang: "5점: 'precise, idiomatic word choice · almost no errors' / 3점: 'Some noticeable errors in structure, word forms, idiomatic language'", syn: "5점: 'Effective syntactic variety' / 3점: 'moderate range of syntax'" },
+    spk: { elab: "5점: 'on topic and well elaborated' / 3점: 'elaboration may be relatively limited'", lang: "5점: 'range of accurate grammar and vocabulary' / 3점: 'limited range and accuracy … restrict the precision'", syn: "4점: 'may lack effective sentence-level connectors'" }
+  }[mode];
+  if (A.length.status !== "good") D.push({ area: "Elaboration · 분량", sev: A.length.status === "bad" ? 3 : 1, what: A.length.msg, rubric: RUB.elab, fix: "'주장 → 이유 → 구체적 예시 → 정리' 4단 구조를 모두 채우세요." });
+  if (A.grammar.status !== "good") D.push({ area: "Language Use · 문법/어법", sev: A.grammar.status === "bad" ? 3 : 2, what: A.grammar.msg + (dedup[0] ? ` 대표 사례: "${dedup[0].wrong}" → "${dedup[0].right}"` : ""), rubric: RUB.lang, fix: "아래 '문법 교정' 표의 오류 유형을 먼저 정리하고, 제출 전 주어-동사 일치·관사·시제를 마지막 1분 동안 점검하세요." });
+  if (A.transitions.status !== "good") D.push({ area: "Cohesion · 연결어", sev: A.transitions.status === "bad" ? 2 : 1, what: A.transitions.msg, rubric: RUB.syn, fix: "빠진 기능군(" + (A.transitions.missingCats.map((x) => x.cat).slice(0, 3).join(", ") || "-") + ")의 연결어를 1개씩 추가하세요." });
+  if (isSpeech && A.fillers.status !== "good") D.push({ area: "Fluency · 필러", sev: A.fillers.status === "bad" ? 2 : 1, what: A.fillers.msg, rubric: RUB.elab.replace(/^.*$/, "3점: 'Frequent or lengthy pauses result in a choppy pace; filler words are frequent.'"), fix: "Um/Uh 대신 'Well,' 'Actually,' 'Let me think…'로 시간을 벌고, 다음 문장 첫 구절을 미리 준비하세요." });
+  if (!isSpeech && A.fillers.total > 0) D.push({ area: "Register · 비격식 표현", sev: 1, what: A.fillers.msg, rubric: "Email 5점: 'Consistent use of appropriate social conventions (politeness, register)'", fix: "구어 표현을 격식 있는 표현으로 바꾸세요 (kind of → somewhat, you know → 삭제)." });
+  if (A.flow.items.some((x) => x.status !== "good")) D.push({ area: "Syntactic variety · 구문/유창성", sev: 1, what: A.flow.items.filter((x) => x.status !== "good").map((x) => x.msg)[0], rubric: RUB.syn, fix: "한 문단에 최소 1개의 복문(관계절·양보절)을 포함하세요." });
+  if (A.expr.status === "bad") D.push({ area: "Word choice · 표현의 정밀성", sev: 1, what: A.expr.msg, rubric: "5점: 'precise, idiomatic word choice'", fix: "good/bad/thing 같은 평이한 단어를 구체적 형용사·명사로 교체하세요." });
+  D.sort((a, b) => b.sev - a.sev);
+  A.deductions = D;
+  return A;
+}
+
+/* ---- 5) 통합 피드백 ---- */
+function buildFeedback(R, meta) {
+  meta = meta || {};
+  const F = { rl: {}, spk: null, wrt: null, priorities: [] };
+  if (!R.sk.reading) F.rl.reading = diagnoseRL(R.reading, "reading");
+  if (!R.sk.listening) F.rl.listening = diagnoseRL(R.listening, "listening");
+  if (!R.sk.speaking) {
+    F.spk = {
+      lr: R.lr.map((x) => ({ target: x.target, text: x.resp && x.resp.text || "", score: x.score, diff: x.resp && x.resp.text ? diffRepeat(x.target, x.resp.text) : null })),
+      iv: R.iv.map((x) => ({ q: x.q, score: x.score, a: analyzeText(x.resp && x.resp.text || "", "spk"), text: x.resp && x.resp.text || "", usedMic: !!(x.resp && x.resp.usedMic) })),
+      note: meta.usedMic && meta.usedSR ? "자동 음성 전사는 'um/uh' 같은 필러와 말 더듬음을 생략하는 경우가 많습니다. 필러 수치는 실제 녹음으로 교차 확인하세요." : meta.usedMic ? "자동 전사 텍스트가 없어 직접 입력한 텍스트 기준으로 분석했습니다." : "텍스트로 입력한 답변 기준 분석입니다. 실제 발화에서는 필러·속도가 다를 수 있습니다."
+    };
+  }
+  if (!R.sk.writing) F.wrt = { email: analyzeText(R.texts.email, "email"), disc: analyzeText(R.texts.disc, "disc") };
+  /* 우선순위 */
+  const pool = [];
+  Object.entries(F.rl).forEach(([sec, d]) => d && d.weak.forEach((t) => pool.push({ w: 3, area: (sec === "reading" ? "Reading" : "Listening") + " · " + t.type, tip: QTYPE_ADVICE[t.type] || "" })));
+  if (F.wrt) [["Email", F.wrt.email], ["Discussion", F.wrt.disc]].forEach(([k, a]) => a && !a.empty && (a.deductions || []).slice(0, 2).forEach((d) => pool.push({ w: d.sev + 1, area: "Writing " + k + " · " + d.area, tip: d.fix })));
+  if (F.spk) { const aggr = {}; F.spk.iv.forEach((x) => (x.a.deductions || []).forEach((d) => { aggr[d.area] = aggr[d.area] || { w: 0, d, n: 0 }; aggr[d.area].w += d.sev; aggr[d.area].n++; })); Object.values(aggr).forEach((g) => pool.push({ w: g.w / 2 + 1, area: "Speaking Interview · " + g.d.area + (g.n > 1 ? ` (${g.n}문항)` : ""), tip: g.d.fix })); }
+  pool.sort((a, b) => b.w - a.w); F.priorities = pool.slice(0, 5);
+  return F;
+}
+
+
+/* ============ 정밀 피드백 리포트 UI (학생 전달용) ============ */
+const FB_TONE = { good: ["var(--good)", "var(--goodbg)", "양호"], warn: ["var(--warn)", "var(--warnbg)", "보강 필요"], bad: ["var(--bad)", "var(--badbg)", "감점 요인"] };
+const Pill = ({ s, children }) => <span className="text-[11px] font-bold px-2 py-0.5 rounded whitespace-nowrap" style={{ color: FB_TONE[s][0], background: FB_TONE[s][1] }}>{children || FB_TONE[s][2]}</span>;
+function Panel({ title, sub, status, children }) {
+  return (
+    <div className="border border-line rounded-lg p-3 bg-surface min-w-0" style={{ breakInside: "avoid" }}>
+      <div className="flex items-start justify-between gap-2 mb-1.5">
+        <div><div className="font-bold text-[14.5px]">{title}</div>{sub && <div className="text-[11.5px] text-muted">{sub}</div>}</div>
+        {status && <Pill s={status} />}
+      </div>
+      {children}
+    </div>
+  );
+}
+const Li = ({ s = "muted", children }) => <li className="text-[13.5px] flex gap-1.5"><span style={{ color: s === "muted" ? "var(--muted)" : FB_TONE[s][0] }}>{s === "good" ? "✓" : s === "muted" ? "·" : "▲"}</span><span className="min-w-0">{children}</span></li>;
+
+/* 학생 답안에 오류·필러 하이라이트 */
+function MarkedText({ text, a }) {
+  const t = text || "";
+  const ranges = [];
+  if (a && !a.empty) {
+    (a.grammar.items || []).forEach((g) => { if (g.wrong && t.slice(g.at, g.at + g.wrong.length).toLowerCase() === g.wrong.toLowerCase()) ranges.push([g.at, g.at + g.wrong.length, "g", g.right]); });
+    [...(a.fillers.hes || []), ...(a.fillers.dis || [])].forEach((f) => { if (t.slice(f.idx, f.idx + f.len).toLowerCase().includes(f.label.toLowerCase())) ranges.push([f.idx, f.idx + f.len, "f", ""]); });
+    (a.fillers.repeats || []).forEach((r) => { const i = t.indexOf(r.w); if (i >= 0) ranges.push([i, i + r.w.length, "f", ""]); });
+  }
+  ranges.sort((x, y) => x[0] - y[0]);
+  const parts = []; let pos = 0;
+  ranges.forEach(([s, e, k, fix], i) => { if (s < pos) return; if (s > pos) parts.push(t.slice(pos, s)); parts.push(<mark key={i} title={k === "g" ? "→ " + fix : "필러/반복"} style={{ background: k === "g" ? "var(--badbg)" : "var(--warnbg)", color: k === "g" ? "var(--bad)" : "var(--warn)", textDecoration: "underline wavy", borderRadius: 3, padding: "0 1px" }}>{t.slice(s, e)}</mark>); pos = e; });
+  parts.push(t.slice(pos));
+  return <p className="text-[13.5px] whitespace-pre-wrap leading-relaxed bg-surface2 border border-line rounded p-2.5">{t ? parts : "(없음)"}<span className="block text-[11px] text-muted mt-1.5"><span style={{ color: "var(--bad)" }}>빨간 물결</span> = 문법·어법 오류 · <span style={{ color: "var(--warn)" }}>주황 물결</span> = 필러/반복</span></p>;
+}
+
+function TextFeedback({ a, text, kind, scoreLabel }) {
+  if (!a || a.empty) return <p className="text-sm text-muted">응답이 없어 분석할 수 없습니다. (0점: blank response)</p>;
+  const isSpk = kind === "spk";
+  const g = a.grammar, f = a.fillers, tr = a.transitions, fl = a.flow;
+  return (
+    <div className="flex flex-col gap-3">
+      {scoreLabel && <div className="text-sm font-semibold mono">{scoreLabel}</div>}
+      <MarkedText text={text} a={a} />
+      <Panel title="① 감점 요인 · 개선점 (ETS 루브릭 기준)" status={a.deductions.length === 0 ? "good" : a.deductions[0].sev >= 3 ? "bad" : "warn"}>
+        {a.deductions.length === 0 ? <p className="text-[13.5px]" style={{ color: "var(--good)" }}>뚜렷한 감점 요인이 감지되지 않았습니다. 현재 수준을 유지하며 표현의 정밀도를 더 높여 보세요.</p> :
+          <ol className="flex flex-col gap-2.5">{a.deductions.map((d, i) => (
+            <li key={i} className="text-[13.5px] border-l-4 pl-2.5" style={{ borderColor: d.sev >= 3 ? "var(--bad)" : d.sev === 2 ? "var(--warn)" : "var(--line)" }}>
+              <div className="font-semibold">{d.area} <Pill s={d.sev >= 3 ? "bad" : "warn"}>{d.sev >= 3 ? "감점 큼" : d.sev === 2 ? "감점 중간" : "감점 작음"}</Pill></div>
+              <div>{d.what}</div>
+              <div className="text-[12px] text-muted mt-0.5">루브릭 · {d.rubric}</div>
+              <div className="text-[13px] mt-0.5"><b>개선</b> · {d.fix}</div>
+            </li>))}</ol>}
+      </Panel>
+      <div className="grid md:grid-cols-2 gap-3">
+        <Panel title="② Word Count (분량)" sub={`목표 ${a.length.target}단어 · 최소 ${a.length.min}`} status={a.length.status}>
+          <div className="mono text-2xl font-semibold">{a.n}<span className="text-sm text-muted font-normal"> words · {a.sentCount} sentences</span></div>
+          <p className="text-[13.5px] mt-1">{a.length.msg}</p>
+        </Panel>
+        <Panel title={isSpk ? "③ 필러(Fillers) 분석" : "③ 구어체·필러 점검"} sub={isSpk ? "Um · Uh · Er · you know …" : "쓰기에서는 격식(register) 유지"} status={f.status}>
+          <p className="text-[13.5px]">{f.msg}</p>
+          {(f.hes.length > 0 || f.dis.length > 0) && <ul className="mt-1.5 flex flex-col gap-1">{[...f.hes, ...f.dis].slice(0, 4).map((x, i) => <Li key={i} s="warn"><span className="mono">{x.label}</span> <span className="text-muted">{x.ctx}</span></Li>)}</ul>}
+          {f.repeats.length > 0 && isSpk && <p className="text-[13px] mt-1.5"><b>반복(false start)</b> {f.repeats.slice(0, 3).map((x) => `"${x.w}"`).join(", ")}</p>}
+          {f.guide.length > 0 && <div className="mt-2 text-[13px] rounded p-2" style={{ background: "var(--goodbg)", color: "var(--ink)" }}><b>교정 가이드</b> · 필러 대신 <span className="mono">{f.guide.join("  ")}</span> 로 시작하며 생각할 시간을 확보하세요.</div>}
+          {Object.keys(f.natural).length > 0 && <p className="text-[12.5px] text-muted mt-1.5">자연스러운 표현 사용: {Object.entries(f.natural).map(([k, c]) => `${k} ×${c}`).join(", ")}</p>}
+        </Panel>
+        <Panel title="④ 연결어(Transitions)" sub={`${tr.catCount}/5 기능군 · ${tr.uniqConn}종 · 총 ${tr.totalConn}회`} status={tr.status}>
+          <p className="text-[13.5px]">{tr.msg}</p>
+          <ul className="mt-1.5 flex flex-col gap-1">
+            {Object.entries(tr.cats).map(([c, arr]) => <Li key={c} s="good"><b>{c}</b> <span className="mono text-[12.5px]">{arr.map((x) => x.w + (x.c > 1 ? " ×" + x.c : "")).join(", ")}</span></Li>)}
+            {tr.missingCats.slice(0, 3).map((m) => <Li key={m.cat} s="warn"><b>{m.cat}</b> 없음 → <span className="mono text-[12.5px]">{m.samples.join("  ")}</span></Li>)}
+            {tr.overuse.length > 0 && <Li s="warn">과다 반복: {tr.overuse.map((o) => `${o.w} ×${o.c}${o.alt ? " → " + o.alt : ""}`).join(" / ")}</Li>}
+          </ul>
+        </Panel>
+        <Panel title="⑤ 유창성 · 응집성 (Fluency & Coherence)" sub="문장 구조와 논리 전개" status={fl.status}>
+          <p className="text-[13.5px]">{fl.msg}</p>
+          <ul className="mt-1.5 flex flex-col gap-1">
+            {fl.struct.map((x, i) => <Li key={i} s={x.ok ? "good" : "warn"}>{x.label}</Li>)}
+          </ul>
+          <ul className="mt-1.5 pt-1.5 border-t border-line flex flex-col gap-1">{fl.items.map((x, i) => <Li key={i} s={x.status === "good" ? "good" : "warn"}>{x.msg}</Li>)}</ul>
+        </Panel>
+      </div>
+      <Panel title="⑥ 문법 · 어법 교정 (Language Use)" sub={`자동 탐지 ${g.items.length + g.structure.length}건 · 눈에 띄는 오류 ${g.major}건`} status={g.status}>
+        <p className="text-[13.5px]">{g.msg}</p>
+        {(g.items.length > 0 || g.structure.length > 0) && (
+          <div className="overflow-x-auto mt-2"><table className="w-full text-[13px] border-collapse">
+            <thead><tr className="text-left text-muted text-[11.5px]"><th className="py-1 pr-2">유형</th><th className="pr-2">내 표현</th><th className="pr-2">교정</th><th>설명</th></tr></thead>
+            <tbody>
+              {g.items.map((x, i) => <tr key={i} className="border-t border-line align-top"><td className="py-1.5 pr-2 whitespace-nowrap font-semibold">{x.cat}</td><td className="pr-2" style={{ color: "var(--bad)" }}>{x.wrong}</td><td className="pr-2" style={{ color: "var(--good)" }}>{x.right}</td><td className="text-muted">{x.msg}</td></tr>)}
+              {g.structure.map((x, i) => <tr key={"s" + i} className="border-t border-line align-top"><td className="py-1.5 pr-2 whitespace-nowrap font-semibold">{x.cat}</td><td colSpan={2} className="pr-2 italic" style={{ color: "var(--bad)" }}>“{x.s.length > 110 ? x.s.slice(0, 110) + "…" : x.s}”</td><td className="text-muted">{x.msg}</td></tr>)}
+            </tbody></table></div>)}
+        <p className="text-[11.5px] text-muted mt-2">※ 규칙 기반 자동 점검으로 일부 오류는 놓치거나 오탐할 수 있습니다. 선생님 확인을 거쳐 전달하세요.</p>
+      </Panel>
+      <Panel title="⑦ Key Expressions (핵심 표현)" sub="잘 쓴 표현 · 업그레이드 제안 · 추천 표현" status={a.expr.status}>
+        <p className="text-[13.5px]">{a.expr.msg}</p>
+        {a.expr.strong.length > 0 && <p className="text-[13px] mt-1.5"><b style={{ color: "var(--good)" }}>잘 쓴 표현</b> · <span className="mono">{a.expr.strong.join(" / ")}</span></p>}
+        {a.expr.upgrades.length > 0 && <div className="mt-2"><div className="text-[13px] font-semibold">표현 업그레이드</div><ul className="flex flex-col gap-1 mt-1">{a.expr.upgrades.map((u, i) => <Li key={i} s="warn"><span style={{ color: "var(--bad)" }}>{u.from}{u.c > 1 ? " ×" + u.c : ""}</span> → <span style={{ color: "var(--good)" }}>{u.to}</span></Li>)}</ul></div>}
+        <div className="mt-2"><div className="text-[13px] font-semibold">이 과제에서 쓰면 좋은 Key Expressions</div><ul className="flex flex-col gap-1 mt-1">{a.expr.recommend.map(([k, v], i) => <Li key={i}><b>{k}</b> <span className="mono text-[12.5px]">{v}</span></Li>)}</ul></div>
+      </Panel>
+    </div>
+  );
+}
+
+function RLDiag({ title, d, skipped }) {
+  if (skipped || !d) return <div className="text-sm text-muted">{title} 미응시</div>;
+  return (
+    <div className="min-w-0">
+      <div className="flex items-center justify-between mb-1"><b>{title}</b><span className="mono text-sm">{d.rows.filter((r) => r.ok).length}/{d.rows.length}</span></div>
+      <div className="overflow-x-auto"><table className="w-full text-[13px] border-collapse">
+        <thead><tr className="text-left text-muted text-[11.5px]"><th className="py-1 pr-2">#</th><th className="pr-2">문제 유형</th><th className="pr-2">결과</th><th>내 답 / 정답</th></tr></thead>
+        <tbody>{d.rows.map((r) => (
+          <tr key={r.i} className="border-t border-line align-top">
+            <td className="py-1.5 pr-2 mono">{r.i}</td><td className="pr-2 font-semibold">{r.type}</td>
+            <td className="pr-2 font-bold whitespace-nowrap" style={{ color: r.ok ? "var(--good)" : "var(--bad)" }}>{r.ok ? "정답" : r.answered ? "오답" : "미응답"}</td>
+            <td className="text-[12.5px]">{r.ok ? <span className="text-muted">{r.unit}</span> : <div><div className="text-muted">{r.q}</div>{r.pt && <div style={{ color: "var(--bad)" }}>내 답: {r.pt}</div>}{r.ct && <div style={{ color: "var(--good)" }}>정답: {r.ct}</div>}{r.scriptUsed && <div className="text-muted">스크립트 확인 후 응답</div>}</div>}</td>
+          </tr>))}</tbody></table></div>
+      <div className="mt-2 rounded p-2.5 text-[13.5px]" style={{ background: d.weak.length ? "var(--warnbg)" : "var(--goodbg)" }}>
+        <b>취약점 진단</b> · {d.summary}
+        {d.advice.map((x, i) => <p key={i} className="mt-1 text-[13px]"><b>{x.type}</b> — {x.text}</p>)}
+      </div>
+    </div>
+  );
+}
+
+function feedbackText(F, R, name, meta, showScore) {
+  const L = []; const line = (s = "") => L.push(s);
+  line(`[TOEFL 정밀 피드백] ${name || "학생"}님`); line(`(ETS 공개 채점 루브릭 관점의 학습용 분석입니다)`); line();
+  if (showScore && R.overall != null) { line(`Overall Band ${R.overall.toFixed(1)} (${cefr(R.overall)}) · 구 120점 환산 약 ${OVERALL120[R.overall]}점`); ["reading", "listening", "writing", "speaking"].forEach((k) => { const s = R.secs[k]; line(`- ${KOR[k]}: ${s.skipped ? "미응시" : `Band ${s.band.toFixed(1)} (${s.s30}/30)`}`); }); line(); }
+  if (F.priorities.length) { line("■ 우선 개선 TOP " + F.priorities.length); F.priorities.forEach((p, i) => line(`${i + 1}. ${p.area} — ${p.tip}`)); line(); }
+  [["Reading", F.rl.reading], ["Listening", F.rl.listening]].forEach(([t, d]) => {
+    if (!d) return; line(`■ ${t} 유형별 진단 (${d.rows.filter((r) => r.ok).length}/${d.rows.length})`);
+    d.rows.forEach((r) => line(`${r.i}. [${r.type}] ${r.ok ? "정답" : r.answered ? "오답" : "미응답"}${!r.ok && r.ct ? ` — 내 답: ${r.pt || "-"} / 정답: ${r.ct}` : ""}`));
+    line("→ " + d.summary); d.advice.forEach((x) => line(`  · ${x.type}: ${x.text}`)); line();
+  });
+  const dumpText = (title, a, txt, score) => {
+    line(`■ ${title}${score ? " · " + score : ""}`);
+    if (!a || a.empty) { line("응답 없음"); line(); return; }
+    line(`답안: ${txt}`);
+    line(`· Word count: ${a.n}단어 / 문장 ${a.sentCount} — ${a.length.msg}`);
+    line(`· 필러: ${a.fillers.msg}${a.fillers.guide.length ? " 교정: " + a.fillers.guide.join(" ") : ""}`);
+    line(`· 연결어: ${a.transitions.msg}`);
+    if (a.transitions.missingCats.length) line(`  추천: ${a.transitions.missingCats.slice(0, 2).map((m) => m.cat + " " + m.samples.join(" ")).join(" / ")}`);
+    line(`· 유창성/응집성: ${a.flow.msg}`); a.flow.items.filter((x) => x.status !== "good").slice(0, 3).forEach((x) => line("  - " + x.msg)); a.flow.struct.filter((x) => !x.ok).forEach((x) => line("  - 미충족: " + x.label));
+    line(`· 문법: ${a.grammar.msg}`); a.grammar.items.slice(0, 8).forEach((x) => line(`  - [${x.cat}] ${x.wrong} → ${x.right} (${x.msg})`)); a.grammar.structure.slice(0, 3).forEach((x) => line(`  - [${x.cat}] ${x.msg}`));
+    line(`· Key Expressions: ${a.expr.msg}${a.expr.strong.length ? " 잘 쓴 표현: " + a.expr.strong.join(", ") : ""}`); a.expr.upgrades.slice(0, 4).forEach((u) => line(`  - ${u.from} → ${u.to}`));
+    if (a.deductions.length) { line("· 감점 요인 (루브릭)"); a.deductions.forEach((d) => { line(`  - ${d.area}: ${d.what}`); line(`    개선: ${d.fix}`); }); }
+    line();
+  };
+  if (F.spk) {
+    line(`■ Speaking · Listen and Repeat`);
+    F.spk.lr.forEach((x, i) => { line(`${i + 1}. ${showScore ? `[${x.score}/5] ` : ""}정답: ${x.target}`); line(`   응답: ${x.text || "(없음)"}`); if (x.diff && x.diff.missing.length) line(`   누락 단어: ${x.diff.missing.join(", ")}`); }); line();
+    F.spk.iv.forEach((x, i) => dumpText(`Speaking Interview Q${i + 1}`, x.a, x.text, showScore ? `${x.score}/5` : ""));
+    line("※ " + F.spk.note); line();
+  }
+  if (F.wrt) { dumpText("Writing · Write an Email", F.wrt.email, R.texts.email, showScore ? `${R.em.score}/5` : ""); dumpText("Writing · Academic Discussion", F.wrt.disc, R.texts.disc, showScore ? `${R.ds.score}/5` : ""); }
+  return L.join("\n");
+}
+
+function FeedbackReport({ R, name, meta }) {
+  const F = useMemo(() => buildFeedback(R, meta), []);
+  const [showScore, setShowScore] = useState(false); const [copied, setCopied] = useState("");
+  const copy = async () => { const txt = feedbackText(F, R, name, meta, showScore); try { await navigator.clipboard.writeText(txt); setCopied("ok"); } catch (e) { setCopied("fail"); } setTimeout(() => setCopied(""), 2200); };
+  const print = () => { document.body.classList.add("pf-mode"); const done = () => { document.body.classList.remove("pf-mode"); window.removeEventListener("afterprint", done); }; window.addEventListener("afterprint", done); setTimeout(() => window.print(), 50); };
+  const sk = R.sk;
+  return (
+    <div id="pf" className="flex flex-col gap-5">
+      <Card>
+        <p className="text-sm font-semibold uppercase tracking-widest text-accent">데이빗토플 · 정밀 피드백 리포트</p>
+        <h2 className="text-2xl font-bold mt-0.5" style={{ textWrap: "balance" }}>{name ? `${name}님의 영역별 정밀 피드백` : "영역별 정밀 피드백"}</h2>
+        <p className="text-sm text-muted mt-1">ETS TOEFL Writing·Speaking Scoring Guide의 평가 관점(전개·언어 사용·구문 다양성·유창성)을 기준으로 감점 요인과 개선점을 정리했습니다.</p>
+        <div className="flex flex-wrap items-center gap-2 mt-3 pf-actions">
+          <button className="btn" onClick={copy}>{copied === "ok" ? "복사되었습니다" : copied === "fail" ? "복사 실패 — 인쇄를 이용하세요" : "학생 전달용 텍스트 복사"}</button>
+          <button className="btn btn-ghost" onClick={print}>인쇄 / PDF 저장</button>
+          <label className="text-sm flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={showScore} onChange={(e) => setShowScore(e.target.checked)} /> 점수(Band) 포함</label>
+        </div>
+        {showScore && R.overall != null && <div className="mt-3 text-sm flex flex-wrap gap-x-5 gap-y-1"><span><b>Overall</b> <span className="mono">{R.overall.toFixed(1)}</span> ({cefr(R.overall)})</span>{["reading", "listening", "writing", "speaking"].map((k) => <span key={k}><b>{KOR[k]}</b> <span className="mono">{R.secs[k].skipped ? "미응시" : R.secs[k].band.toFixed(1)}</span></span>)}</div>}
+      </Card>
+
+      {F.priorities.length > 0 && <Card>
+        <h3 className="font-bold mb-2">우선 개선 순서 TOP {F.priorities.length}</h3>
+        <ol className="flex flex-col gap-2">{F.priorities.map((p, i) => <li key={i} className="text-[14px] flex gap-2"><span className="mono font-bold text-accent">{i + 1}</span><span><b>{p.area}</b><br /><span className="text-muted">{p.tip}</span></span></li>)}</ol>
+      </Card>}
+
+      <Card>
+        <h3 className="font-bold mb-3">Reading · Listening — 문제 유형별 진단</h3>
+        <div className="grid md:grid-cols-2 gap-5">
+          <RLDiag title="Reading" d={F.rl.reading} skipped={sk.reading} />
+          <RLDiag title="Listening" d={F.rl.listening} skipped={sk.listening} />
+        </div>
+      </Card>
+
+      {F.spk && <Card>
+        <h3 className="font-bold mb-1">Speaking — 정밀 피드백</h3>
+        <p className="text-[12.5px] text-muted mb-3">{F.spk.note}</p>
+        <div className="mb-4">
+          <div className="font-semibold mb-1.5">Listen and Repeat — 단어 단위 비교</div>
+          <div className="flex flex-col gap-2">{F.spk.lr.map((x, i) => (
+            <div key={i} className="border border-line rounded p-2.5 text-[13.5px]" style={{ breakInside: "avoid" }}>
+              <div className="flex gap-2 items-center mb-1"><span className="mono font-semibold">L&R {i + 1}</span>{showScore && <span className="mono font-semibold">{x.score}/5</span>}{x.diff && <Pill s={x.diff.missing.length === 0 ? "good" : x.diff.matchRate >= 0.8 ? "warn" : "bad"}>{x.diff.missing.length === 0 ? "완벽" : `누락 ${x.diff.missing.length}단어`}</Pill>}</div>
+              <div>{x.diff ? x.diff.tokens.map((t, k) => <span key={k} className="mr-1" style={t.ok ? {} : { color: "var(--bad)", background: "var(--badbg)", textDecoration: "line-through", borderRadius: 3, padding: "0 2px" }}>{t.w}</span>) : <span className="text-muted">{x.target}</span>}</div>
+              <div className="text-[12.5px] text-muted mt-1">내 응답: {x.text || "(없음)"}{x.diff && x.diff.extra.length > 0 && <span> · 추가/변형: <span style={{ color: "var(--warn)" }}>{x.diff.extra.join(" ")}</span></span>}</div>
+              {x.diff && x.diff.missing.length > 0 && <div className="text-[12.5px] mt-1"><b>개선</b> · 취소선 단어가 빠졌습니다. {x.score <= 3 ? "문장을 의미 단위(chunk)로 끊어 기억하고, 문장 끝까지 말하는 연습을 하세요." : "관사·be동사 같은 기능어와 시제·수 표지를 끝까지 정확히 반복하세요."}</div>}
+            </div>))}</div>
+        </div>
+        <div className="font-semibold mb-1.5">Take an Interview — 문항별 분석</div>
+        <div className="flex flex-col gap-3">{F.spk.iv.map((x, i) => (
+          <details key={i} open={i === 0} className="border border-line rounded-lg p-3">
+            <summary className="cursor-pointer flex flex-wrap gap-2 items-center"><span className="mono font-bold">Q{i + 1}</span>{showScore && <span className="mono font-semibold">{x.score}/5</span>}
+              {!x.a.empty && <><Pill s={x.a.length.status}>분량 {x.a.n}</Pill><Pill s={x.a.fillers.status}>필러 {x.a.fillers.total}</Pill><Pill s={x.a.transitions.status}>연결어 {x.a.transitions.uniqConn}종</Pill><Pill s={x.a.flow.status}>유창성</Pill><Pill s={x.a.grammar.status}>문법 {x.a.grammar.items.length + x.a.grammar.structure.length}건</Pill></>}</summary>
+            <p className="text-[13px] text-muted mt-2">질문 · {x.q}</p>
+            <div className="mt-2"><TextFeedback a={x.a} text={x.text} kind="spk" /></div>
+          </details>))}</div>
+      </Card>}
+
+      {F.wrt && <Card>
+        <h3 className="font-bold mb-3">Writing — 정밀 피드백</h3>
+        <div className="flex flex-col gap-5">
+          {[["Write an Email", F.wrt.email, R.texts.email, R.em, "email"], ["Write for an Academic Discussion", F.wrt.disc, R.texts.disc, R.ds, "disc"]].map(([t, a, txt, r, k]) => (
+            <div key={k}><div className="font-semibold mb-2 pb-1 border-b border-line">{t}{showScore && <span className="mono ml-2">{r.score}/5</span>}</div><TextFeedback a={a} text={txt} kind={k} /></div>))}
+        </div>
+      </Card>}
+      <p className="text-[11.5px] text-muted">본 피드백은 공개된 ETS 채점 가이드의 평가 관점을 참고한 자체 규칙 기반 분석으로, 공식 점수가 아닌 학습용 참고 자료입니다.</p>
+    </div>
+  );
+}
+
+/* ============ REPORT (선생님 전용) ============ */
+function buildReport({ reading, listening, writing, speaking }) {
+  const sk = { reading: !!reading.skipped, listening: !!listening.skipped, writing: !!writing.skipped, speaking: !!speaking.skipped };
+  const spk = sk.speaking ? { lr: [], iv: [] } : speaking, wr = sk.writing ? { email: "", disc: "" } : writing;
+  const lr = LR.lines.map((t, i) => ({ target: t, ...scoreRepeat(t, spk.lr[i] || { text: "", voicedMs: 0 }), resp: spk.lr[i] }));
+  const iv = INTERVIEW.qs.map((q, i) => ({ q, ...scoreInterview(spk.iv[i] || { text: "", usedMic: false }, i), resp: spk.iv[i] }));
+  const lrAvg = lr.reduce((a, x) => a + x.score, 0) / lr.length, ivAvg = iv.reduce((a, x) => a + x.score, 0) / iv.length;
+  const spk5 = lrAvg * 0.5 + ivAvg * 0.5;
+  const spk30 = Math.round(interp(SPK_MAP, spk5));
+  const em = scoreEmail(wr.email), ds = scoreDiscussion(wr.disc);
+  const wr5 = (em.score + ds.score) / 2, wr30 = Math.round(interp(WRT_MAP, wr5));
+  const rd30 = Math.round(reading.ratio * 30), ls30 = Math.round(listening.ratio * 30);
+  const secs = {
+    reading: { s30: rd30, band: bandFrom("reading", rd30), spread: 1 },
+    listening: { s30: ls30, band: bandFrom("listening", ls30), spread: 1 },
+    writing: { s30: wr30, band: bandFrom("writing", wr30), spread: 0.5 },
+    speaking: { s30: spk30, band: bandFrom("speaking", spk30), spread: 0.5 }
+  };
+  Object.keys(sk).forEach((k) => { if (sk[k]) secs[k] = { skipped: true, s30: 0, band: null, spread: 0 }; });
+  const att = Object.values(secs).filter((s) => !s.skipped);
+  const overall = att.length ? roundHalf(att.reduce((a, s) => a + s.band, 0) / att.length) : null;
+  const flags = [...(sk.speaking ? [] : [...lr.flatMap((x) => x.flags), ...iv.flatMap((x) => x.flags)]), ...(sk.writing ? [] : [...em.flags, ...ds.flags])];
+  const slim = (m) => ({ ...m, items: m.items.map(({ opts, ...rest }) => ({ ...rest, ...(!rest.ok && opts ? { pt: rest.picked != null ? opts[rest.picked] : undefined, ct: opts[rest.correct] } : {}) })) });
+  return { lr, iv, lrAvg, ivAvg, em, ds, secs, overall, flags, sk, texts: { email: wr.email, disc: wr.disc }, reading: slim(reading), listening: slim(listening) };
+}
+
+function levelAdvice(b) {
+  if (b == null) return "응시한 영역이 없어 레벨을 산출하지 못했습니다.";
+  if (b >= 5) return "상위권(C1 이상)입니다. 고득점을 위해 Interview의 elaboration 밀도와 Discussion의 반론·재반박 구조를 다듬는 단계입니다.";
+  if (b >= 4) return "중상위권(B2)입니다. 연결어·구문 다양성과 Listen and Repeat 후반부 문장 정확도를 올리면 5점대에 진입할 수 있습니다.";
+  if (b >= 3) return "중급(B1)입니다. 문장 단위 정확성(시제·수일치)과 이유-예시 구조 훈련이 가장 효율적입니다. 템플릿 기반 Speaking/Writing 집중 훈련을 권합니다.";
+  return "기초 보강 단계입니다. 핵심 문형과 어휘 기반을 다진 뒤 Listen and Repeat, Build a Sentence부터 단계적으로 올리는 것을 권합니다.";
+}
+
+const Bar = ({ band, spread, label, s30, skipped }) => {
+  if (skipped) return <div className="py-2 flex justify-between text-sm"><span className="font-semibold">{label}</span><span className="text-muted">미응시 (중도 종료)</span></div>;
+  const lo = clampBand(band - spread), hi = clampBand(band + spread);
+  const x = (v) => ((v - 1) / 5) * 100;
+  return (
+    <div className="py-2">
+      <div className="flex justify-between text-sm mb-1"><span className="font-semibold">{label}</span><span className="mono">Band {band.toFixed(1)} <span className="text-muted">(예상 {lo.toFixed(1)}–{hi.toFixed(1)} · {cefr(band)} · {s30}/30)</span></span></div>
+      <div className="relative h-3 rounded bg-surface2 border border-line">
+        <div className="absolute top-0 bottom-0 rounded" style={{ left: x(lo) + "%", width: Math.max(2, x(hi) - x(lo)) + "%", background: "var(--accent)", opacity: 0.35 }} />
+        <div className="absolute -top-1 -bottom-1 w-1 rounded" style={{ left: `calc(${x(band)}% - 2px)`, background: "var(--accent)" }} />
+      </div>
+      <div className="flex justify-between text-[10px] text-muted mono mt-0.5">{[1, 2, 3, 4, 5, 6].map((n) => <span key={n}>{n}</span>)}</div>
+    </div>
+  );
+};
+
+const KOR = { reading: "Reading", listening: "Listening", writing: "Writing", speaking: "Speaking" };
+const STAGE_KOR = { reading: "Reading", listening: "Listening", writing: "Writing", speaking: "Speaking" };
+const fmtAt = (iso) => { try { return new Date(iso).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", hour12: false }); } catch (e) { return iso || "-"; } };
+const fmtDur = (s) => (s == null ? "-" : `${Math.floor(s / 60)}분 ${s % 60}초`);
+
+function Result({ R, name, meta }) {
+  meta = meta || {};
+  const ov = R.overall;
+  const topFlags = useMemo(() => { const m = {}; R.flags.forEach((f) => { const k = f.cat; m[k] = m[k] || { ...f, n: 0 }; m[k].n++; }); return Object.values(m).sort((a, b) => b.n - a.n).slice(0, 6); }, []);
+  const strong = Object.entries(R.secs).filter(([, s]) => !s.skipped).sort((a, b) => b[1].band - a[1].band);
+  const skippedList = Object.entries(R.secs).filter(([, s]) => s.skipped).map(([k]) => KOR[k]);
+  const sets = meta.sets || {};
+  return (
+    <div className="rr max-w-4xl mx-auto px-4 py-8 flex flex-col gap-5">
+      <div>
+        <p className="text-sm font-semibold uppercase tracking-widest text-accent">데이빗토플 · Test Result · 선생님 전용</p>
+        <h1 className="text-3xl font-bold" style={{ textWrap: "balance" }}>{name ? `${name}님의 진단 결과` : "진단 결과"}</h1>
+        <p className="text-sm text-muted mt-1">응시 {fmtAt(meta.at)} · 소요 {fmtDur(meta.durationSec)} · {meta.endedEarly ? `중도 종료 (${STAGE_KOR[meta.endedEarly] || meta.endedEarly} 진행 중)` : "전 영역 완료"} · {meta.usedMic ? "마이크 사용" : "텍스트 응답"}{meta.usedMic && !meta.usedSR ? " (자동 전사 없음)" : ""}</p>
+        <p className="text-sm text-muted">출제 세트 · {["reading", "listening", "speaking", "writing"].map((k) => sets[k]).filter(Boolean).join(" / ") || "-"}</p>
+      </div>
+      {skippedList.length > 0 && <div className="rounded-lg p-3 text-sm border" style={{ background: "var(--warnbg)", color: "var(--warn)", borderColor: "var(--warn)" }}>미응시 영역: <b>{skippedList.join(", ")}</b> — Overall은 응시한 영역만 평균했습니다.</div>}
+      <Card>
+        <div className="flex flex-wrap items-center gap-6">
+          <div><div className="text-xs text-muted uppercase tracking-wider">Overall Band (예상)</div><div className="mono text-6xl font-semibold leading-none mt-1">{ov == null ? "–" : ov.toFixed(1)}</div></div>
+          {ov != null && <div className="text-sm space-y-1"><div><b>CEFR</b> {cefr(ov)}</div><div><b>구 120점 환산</b> 약 {OVERALL120[ov]}점</div><div><b>구간</b> {clampBand(ov - 0.5).toFixed(1)}–{clampBand(ov + 0.5).toFixed(1)}</div></div>}
+          <p className="flex-1 min-w-[240px] text-[14.5px]">{levelAdvice(ov)}</p>
+        </div>
+        <p className="text-xs text-muted mt-4 border-t border-line pt-3">본 결과는 자체 알고리즘으로 산출한 학습 참고용 추정치입니다. 공개된 채점 가이드의 평가 관점과 점수 환산 구간을 참고했습니다. Reading/Listening은 샘플 문항 수가 적어 ±1 밴드, Speaking/Writing은 ±0.5 밴드 구간으로 표시합니다.</p>
+      </Card>
+      <Card>
+        <h2 className="font-bold mb-1">영역별 예상 점수 구간</h2>
+        {["speaking", "writing", "reading", "listening"].map((k) => <Bar key={k} label={KOR[k]} {...R.secs[k]} />)}
+        {strong.length >= 2 && <p className="text-sm text-muted mt-2">가장 강한 영역: <b className="text-ink">{KOR[strong[0][0]]}</b> · 우선 보완: <b className="text-ink">{KOR[strong[strong.length - 1][0]]}</b></p>}
+      </Card>
+      <Card>
+        <h2 className="font-bold mb-3">핵심 감점 요소 (공개 채점 가이드 참고 기준)</h2>
+        {topFlags.length === 0 ? <p className="text-good">뚜렷한 감점 요소가 감지되지 않았습니다.</p> :
+          <ul className="flex flex-col gap-3">{topFlags.map((f, i) => (
+            <li key={i} className="border border-line rounded p-3 bg-surface2">
+              <div className="flex gap-2 items-center flex-wrap"><span className="font-semibold">{f.cat}</span>{f.n > 1 && <Tag>{f.n}회</Tag>}</div>
+              <p className="text-sm mt-1">{f.msg}</p><p className="text-xs text-muted mt-1">평가 관점 · {f.rubric}</p>
+            </li>))}</ul>}
+      </Card>
+      {!R.sk.speaking && <Card>
+        <h2 className="font-bold mb-3">Speaking 상세 <span className="text-sm font-normal text-muted">Listen and Repeat 평균 {R.lrAvg.toFixed(1)}/5 · Interview 평균 {R.ivAvg.toFixed(1)}/5</span></h2>
+        <div className="flex flex-col gap-2">
+          {R.lr.map((x, i) => (
+            <details key={i} className="border border-line rounded p-3"><summary className="cursor-pointer flex gap-3 items-center"><span className="mono font-semibold w-14">L&R {i + 1}</span><span className="mono font-semibold" style={{ color: x.score >= 4 ? "var(--good)" : x.score >= 3 ? "var(--warn)" : "var(--bad)" }}>{x.score}/5{x.estimated ? "*" : ""}</span><span className="text-sm text-muted truncate">{x.target}</span></summary>
+              <div className="text-sm mt-2 space-y-1"><div><b>정답</b> {x.target}</div><div><b>응답</b> {x.resp && x.resp.text ? x.resp.text : "(없음)"}</div>{x.resp && x.resp.scriptShown && <div className="text-warn">스크립트를 확인한 문항입니다.</div>}{x.flags.map((f, k) => <div key={k} className="text-muted">· {f.msg}</div>)}</div></details>))}
+          {R.iv.map((x, i) => (
+            <details key={i} className="border border-line rounded p-3"><summary className="cursor-pointer flex gap-3 items-center"><span className="mono font-semibold w-14">Q{i + 1}</span><span className="mono font-semibold" style={{ color: x.score >= 4 ? "var(--good)" : x.score >= 3 ? "var(--warn)" : "var(--bad)" }}>{x.score}/5</span><span className="text-sm text-muted">{x.n} words · 필러 {x.fillers} · 연결어 {x.conn}</span></summary>
+              <div className="text-sm mt-2 space-y-1"><div><b>질문</b> {x.q}</div><div><b>응답</b> {x.resp && x.resp.text ? x.resp.text : "(없음)"}</div>{x.flags.map((f, k) => <div key={k} className="text-muted">· {f.msg}</div>)}</div></details>))}
+        </div>
+      </Card>}
+      {!R.sk.writing && <Card>
+        <h2 className="font-bold mb-3">Writing 상세</h2>
+        <div className="grid md:grid-cols-2 gap-4">
+          {[["Write an Email", R.em, R.texts.email], ["Academic Discussion", R.ds, R.texts.disc]].map(([t, r, txt]) => (
+            <div key={t} className="border border-line rounded p-3 min-w-0">
+              <div className="flex justify-between"><b>{t}</b><span className="mono font-semibold">{r.score}/5 · {r.n} words</span></div>
+              <ul className="mt-2 text-sm flex flex-col gap-1">{(r.checks || []).map((c) => <li key={c.label} style={{ color: c.ok ? "var(--good)" : "var(--bad)" }}>{c.ok ? "✓" : "✗"} {c.label}</li>)}</ul>
+              {r.flags.slice(0, 3).map((f, k) => <p key={k} className="text-xs text-muted mt-1">· {f.msg}</p>)}
+              <details className="mt-2" open><summary className="text-sm cursor-pointer text-muted">학생 답안</summary><p className="text-sm whitespace-pre-wrap mt-1">{txt || "(없음)"}</p></details>
+            </div>))}
+        </div>
+      </Card>}
+      <Card>
+        <h2 className="font-bold mb-3">Reading · Listening 상세 <span className="text-sm font-normal text-muted">Reading {R.sk.reading ? "미응시" : `${R.reading.right}/${R.reading.total}`} · Listening {R.sk.listening ? "미응시" : `${R.listening.right}/${R.listening.total}`}</span></h2>
+        <div className="grid md:grid-cols-2 gap-4">
+          {[["Reading", R.reading, R.sk.reading], ["Listening", R.listening, R.sk.listening]].map(([t, r, s]) => (
+            <ul key={t} className="text-sm flex flex-col gap-1 min-w-0">{s ? <li className="text-muted">{t} 미응시</li> : r.items.map((x, i) => <li key={i} style={{ color: x.ok ? "var(--good)" : "var(--bad)" }}>{x.ok ? "✓" : "✗"} <span className="text-ink">{x.unit}</span> <span className="text-muted">· {x.skill}{x.answered === false ? " · 미응답" : ""}{x.scriptUsed ? " · 스크립트 확인" : ""}</span></li>)}</ul>))}
+        </div>
+      </Card>
+      <FeedbackReport R={R} name={name} meta={meta} />
+    </div>
+  );
+}
+
+function reportText(R, name, meta) {
+  const L = [];
+  const sets = meta.sets || {};
+  L.push(`[데이빗토플 Quick Diagnostic] ${name || "응시자"}`);
+  L.push(`응시: ${fmtAt(meta.at)} · 소요 ${fmtDur(meta.durationSec)} · ${meta.endedEarly ? "중도 종료(" + (STAGE_KOR[meta.endedEarly] || meta.endedEarly) + " 진행 중)" : "전 영역 완료"} · ${meta.usedMic ? "마이크" : "텍스트 응답"}`);
+  L.push(`세트: ${["reading", "listening", "speaking", "writing"].map((k) => sets[k]).filter(Boolean).join(" / ")}`);
+  L.push("");
+  L.push(R.overall == null ? "Overall: 산출 불가 (응시 영역 없음)" : `Overall ${R.overall.toFixed(1)} (${cefr(R.overall)}) · 구 120점 환산 약 ${OVERALL120[R.overall]}점`);
+  ["reading", "listening", "writing", "speaking"].forEach((k) => { const s = R.secs[k]; L.push(`- ${KOR[k]}: ${s.skipped ? "미응시" : `Band ${s.band.toFixed(1)} (${cefr(s.band)}, ${s.s30}/30)`}`); });
+  L.push("");
+  const m = {}; R.flags.forEach((f) => { m[f.cat] = m[f.cat] || { ...f, n: 0 }; m[f.cat].n++; });
+  const top = Object.values(m).sort((a, b) => b.n - a.n).slice(0, 6);
+  L.push("[핵심 감점 요소]"); top.length ? top.forEach((f) => L.push(`· ${f.cat}${f.n > 1 ? " ×" + f.n : ""} — ${f.msg}`)) : L.push("· 없음");
+  if (!R.sk.speaking) {
+    L.push(""); L.push(`[Speaking] L&R 평균 ${R.lrAvg.toFixed(1)}/5 · Interview 평균 ${R.ivAvg.toFixed(1)}/5`);
+    R.lr.forEach((x, i) => L.push(`L&R ${i + 1} [${x.score}/5] 정답: ${x.target} | 응답: ${(x.resp && x.resp.text) || "(없음)"}`));
+    R.iv.forEach((x, i) => L.push(`Q${i + 1} [${x.score}/5] (${x.n} words) ${(x.resp && x.resp.text) || "(없음)"}`));
+  }
+  if (!R.sk.writing) {
+    L.push(""); L.push(`[Writing] Email ${R.em.score}/5 (${R.em.n} words) · Discussion ${R.ds.score}/5 (${R.ds.n} words)`);
+    L.push("-- Email --"); L.push(R.texts.email || "(없음)"); L.push("-- Discussion --"); L.push(R.texts.disc || "(없음)");
+  }
+  L.push("");
+  [["Reading", R.reading, R.sk.reading], ["Listening", R.listening, R.sk.listening]].forEach(([t, r, s]) => {
+    L.push(`[${t}] ${s ? "미응시" : r.right + "/" + r.total}`);
+    if (!s) L.push(r.items.map((x, i) => `${i + 1}${x.ok ? "O" : "X"}`).join(" "));
+  });
+  L.push(""); L.push("※ 아래 '결과 코드'를 선생님 전용 화면(주소 끝에 #teacher)에 붙여 넣으면 전체 리포트가 열립니다.");
+  return L.join("\n");
+}
+
+async function packReport(payload) {
+  const bytes = new TextEncoder().encode(JSON.stringify(payload));
+  let out = bytes, tag = "DT1:";
+  try {
+    if (typeof CompressionStream !== "undefined") {
+      const cs = new Blob([bytes]).stream().pipeThrough(new CompressionStream("gzip"));
+      out = new Uint8Array(await new Response(cs).arrayBuffer()); tag = "DT1z:";
+    }
+  } catch (e) { out = bytes; tag = "DT1:"; }
+  let bin = ""; for (let i = 0; i < out.length; i += 0x8000) bin += String.fromCharCode.apply(null, out.subarray(i, i + 0x8000));
+  return tag + btoa(bin);
+}
+async function unpackReport(code) {
+  const m = String(code).trim().replace(/\s+/g, "").match(/^(DT1z?):([A-Za-z0-9+/=]+)/);
+  if (!m) throw new Error("bad code");
+  const bin = atob(m[2]); let out = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+  if (m[1] === "DT1z") { const ds = new Blob([out]).stream().pipeThrough(new DecompressionStream("gzip")); out = new Uint8Array(await new Response(ds).arrayBuffer()); }
+  return JSON.parse(new TextDecoder().decode(out));
+}
+
+async function sendToTeacher({ name, message, code }) {
+  if (!WEB3FORMS_KEY) return { ok: false, reason: "전송 설정(Access Key)이 아직 입력되지 않았습니다." };
+  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 25000);
+  try {
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST", signal: ctl.signal, headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ access_key: WEB3FORMS_KEY, subject: `[데이빗토플 레벨테스트] ${name || "응시자"} 결과`, from_name: "데이빗토플 레벨테스트", name: name || "응시자", message, result_code: code })
+    });
+    const j = await res.json().catch(() => ({}));
+    return { ok: !!(res.ok && j.success), reason: (j && j.message) || String(res.status) };
+  } catch (e) { return { ok: false, reason: "네트워크 오류" }; }
+  finally { clearTimeout(to); }
+}
+
+/* ============ SUBMIT (학생에게는 점수를 보여주지 않음) ============ */
+function Submit({ data, name, getMeta }) {
+  const [state, setState] = useState("sending");
+  const [code, setCode] = useState(""); const [err, setErr] = useState(""); const [copied, setCopied] = useState(false);
+  const pack = useRef(null);
+  const run = useCallback(async () => {
+    setState("sending"); setErr("");
+    try {
+      if (!pack.current) {
+        const meta = getMeta(); const R = buildReport(data);
+        const c = await packReport({ v: 1, name, meta, R });
+        pack.current = { text: reportText(R, name, meta), code: c }; setCode(c);
+      }
+      const r = await sendToTeacher({ name, message: pack.current.text, code: pack.current.code });
+      if (r.ok) setState("sent"); else { setErr(String(r.reason || "")); setState("failed"); }
+    } catch (e) { setErr(String((e && e.message) || e)); setState("failed"); }
+  }, []);
+  useEffect(() => { run(); }, []);
+  const copy = async () => { try { await navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch (e) { setCopied("fail"); } };
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-xl flex flex-col gap-5">
+        <p className="text-sm font-semibold tracking-widest text-accent">데이빗토플 · Quick Diagnostic Test</p>
+        {state === "sending" && <Card><h1 className="text-2xl font-bold mb-2">답안을 제출하고 있어요…</h1><p className="text-muted">잠시만 기다려 주세요. 창을 닫지 마세요.</p></Card>}
+        {state === "sent" && (
+          <>
+            <Card>
+              <h1 className="text-2xl font-bold mb-2" style={{ textWrap: "balance" }}>{name ? `${name}님, ` : ""}수고하셨습니다!</h1>
+              <p className="text-[15px]">시험이 정상적으로 제출되었고, 결과는 <b>선생님께 전달</b>되었습니다. 응시 화면에서는 점수가 공개되지 않으며, 분석이 끝나면 선생님이 직접 안내해 드립니다.</p>
+            </Card>
+            <section className="rounded-lg p-6 flex flex-col gap-3 items-start" style={{ background: "var(--bar)", color: "var(--barInk)" }}>
+              <h2 className="text-lg font-bold">1:1 맞춤 진단 · 시범강의 안내</h2>
+              <p className="opacity-85 text-[14.5px]">데이빗토플 공식 링크에서 상담 신청과 학습 자료를 확인할 수 있습니다.</p>
+              <a className="btn" href={LINKTREE_URL} target="_blank" rel="noopener noreferrer">데이빗토플 공식 링크 바로가기</a>
+            </section>
+          </>
+        )}
+        {state === "failed" && (
+          <Card className="flex flex-col gap-3">
+            <h1 className="text-xl font-bold">결과를 자동으로 보내지 못했어요</h1>
+            <p className="text-sm">{err ? `사유: ${err}. ` : ""}인터넷 연결을 확인하고 다시 전송해 보세요. 계속 실패하면 아래 <b>결과 코드</b>를 복사해 선생님께 보내 주세요. (코드에는 점수가 직접 보이지 않습니다.)</p>
+            <div className="flex gap-2 flex-wrap"><button className="btn" onClick={run}>다시 전송</button><button className="btn btn-ghost" onClick={copy}>{copied === true ? "복사됨" : copied === "fail" ? "아래 코드를 직접 선택해 복사하세요" : "결과 코드 복사"}</button></div>
+            <textarea readOnly className="w-full p-2 mono text-[11px]" style={{ height: 96 }} value={code} onFocus={(e) => e.target.select()} />
+            <a className="underline text-sm text-muted" href={LINKTREE_URL} target="_blank" rel="noopener noreferrer">데이빗토플 공식 링크 (연락 방법)</a>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ============ TEACHER (주소 끝에 #teacher) ============ */
+function Teacher() {
+  const [txt, setTxt] = useState(""); const [res, setRes] = useState(null); const [err, setErr] = useState("");
+  const open = async () => { try { setErr(""); setRes(await unpackReport(txt)); } catch (e) { setErr("코드를 해석하지 못했습니다. 이메일의 '결과 코드'를 DT1 로 시작하는 처음부터 끝까지 그대로 붙여 넣어 주세요."); } };
+  if (res) return (
+    <div>
+      <div className="teacher-bar bg-bar text-barInk"><div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between text-sm"><span className="font-bold">데이빗토플 · 선생님 전용 리포트</span><button className="underline" onClick={() => { setRes(null); setTxt(""); }}>다른 코드 열기</button></div></div>
+      <Result R={res.R} name={res.name} meta={res.meta} />
+    </div>
+  );
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-10 flex flex-col gap-4">
+      <div><p className="text-sm font-semibold tracking-widest text-accent">데이빗토플 · 선생님 전용</p><h1 className="text-2xl font-bold">응시 결과 열기</h1><p className="text-muted mt-1">이메일로 받은 <b>결과 코드</b>(DT1… 로 시작)를 붙여 넣으면 영역별 점수와 학생 답안이 포함된 전체 리포트가 열립니다. 코드는 이 브라우저 안에서만 해석되며 어디에도 저장되지 않습니다.</p></div>
+      <textarea className="w-full p-3 mono text-[12px]" style={{ minHeight: 180 }} value={txt} onChange={(e) => setTxt(e.target.value)} placeholder="DT1z:H4sIA..." />
+      {err && <p className="text-sm text-bad">{err}</p>}
+      <div><button className="btn" disabled={!txt.trim()} onClick={open}>리포트 열기</button></div>
+    </div>
+  );
+}
+
+/* ============ END MODAL ============ */
+function EndModal({ onCancel, onConfirm }) {
+  useEffect(() => { const k = (e) => { if (e.key === "Escape") onCancel(); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, []);
+  return (
+    <div className="modal-back" onClick={onCancel}>
+      <div className="modal" role="alertdialog" aria-modal="true" aria-labelledby="end-title" onClick={(e) => e.stopPropagation()}>
+        <h2 id="end-title" className="text-lg font-bold mb-2">시험을 지금 종료할까요?</h2>
+        <p className="text-sm text-muted mb-4">지금까지 작성한 답안만 제출되고, 아직 시작하지 않은 영역은 <b>미응시</b>로 처리됩니다. 종료하면 되돌릴 수 없어요.</p>
+        <div className="flex gap-2 justify-end flex-wrap">
+          <button className="btn btn-ghost" autoFocus onClick={onCancel}>계속 응시</button>
+          <button className="btn" style={{ background: "var(--bad)", borderColor: "var(--bad)", color: "#fff" }} onClick={onConfirm}>종료하고 제출</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============ APP ============ */
+const ORDER = ["reading", "listening", "writing", "speaking"];
+function skippedData(k) {
+  if (k === "reading") return { ...compileMCQ(READING_UNITS, {}, "reading"), skipped: true };
+  if (k === "listening") return { ...compileMCQ(LISTENING_UNITS, {}, "listening"), skipped: true };
+  if (k === "writing") return { email: "", disc: "", skipped: true };
+  return { lr: [], iv: [], skipped: true };
+}
+function isEmptyPartial(k, p) {
+  if (!p) return true;
+  if (k === "reading" || k === "listening") return !(p.items || []).some((x) => x.answered);
+  if (k === "writing") return !((p.email || "").trim() || (p.disc || "").trim());
+  return !((p.lr || []).concat(p.iv || [])).some((r) => r && (r.text || "").trim());
+}
+
+function App() {
+  const [teacher, setTeacher] = useState(() => /teacher/i.test((location.hash || "") + (location.search || "")));
+  useEffect(() => { const h = () => setTeacher(/teacher/i.test((location.hash || "") + (location.search || ""))); window.addEventListener("hashchange", h); return () => window.removeEventListener("hashchange", h); }, []);
+  const [stage, setStage] = useState("intro");
+  const stageRef = useRef("intro"); stageRef.current = stage;
+  const [name, setName] = useState("");
+  const [data, setData] = useState({});
+  const [mic, setMic] = useState({ status: "unknown", stream: null });
+  const [perm, setPerm] = useState("unknown");
+  const [endOpen, setEndOpen] = useState(false);
+  const micRef = useRef(null), endedRef = useRef(null), t0 = useRef(null), dataRef = useRef({});
+  dataRef.current = data;
+  useEffect(() => {
+    let st = null, dead = false;
+    try { if (navigator.permissions && navigator.permissions.query) navigator.permissions.query({ name: "microphone" }).then((p) => { if (dead) return; st = p; setPerm(p.state); p.onchange = () => setPerm(p.state); }).catch(() => {}); } catch (e) {}
+    return () => { dead = true; if (st) st.onchange = null; };
+  }, []);
+  const requestMic = useCallback(async () => {
+    if (micRef.current && micRef.current.getAudioTracks().some((t) => t.readyState === "live")) return micRef.current;
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error("unsupported");
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      micRef.current = stream; setMic({ status: "ready", stream }); return stream;
+    } catch (e) { setMic({ status: "denied", stream: null }); return null; }
+  }, []);
+  const stopMic = useCallback(() => { try { micRef.current && micRef.current.getTracks().forEach((t) => t.stop()); } catch (e) {} micRef.current = null; }, []);
+  const openEnd = useCallback(() => setEndOpen(true), []);
+  const ctx = useMemo(() => ({ ...mic, perm, requestMic, openEnd }), [mic, perm, requestMic, openEnd]);
+  useEffect(() => { window.scrollTo(0, 0); }, [stage]);
+  const goSubmit = (nd) => { stopSpeech(); srsStop(); stopMic(); setData(nd); setStage("submit"); };
+  const set = (k, next) => (v) => { if (next === "submit") goSubmit({ ...dataRef.current, [k]: v }); else { setData((d) => ({ ...d, [k]: v })); setStage(next); } };
+  const endTest = () => {
+    setEndOpen(false);
+    const cur = stageRef.current, ci = ORDER.indexOf(cur);
+    if (ci < 0) return;
+    let partial = null; try { partial = LIVE.get && LIVE.get(); } catch (e) {}
+    const nd = { ...dataRef.current };
+    ORDER.forEach((k, i) => { if (i === ci) nd[k] = isEmptyPartial(k, partial) ? skippedData(k) : partial; else if (i > ci) nd[k] = skippedData(k); });
+    endedRef.current = cur; goSubmit(nd);
+  };
+  const getMeta = () => {
+    const sp = dataRef.current.speaking || {};
+    const rs = ((sp.lr || []).concat(sp.iv || []));
+    return { at: new Date().toISOString(), sets: SEL, endedEarly: endedRef.current, durationSec: t0.current ? Math.round((Date.now() - t0.current) / 1000) : null, usedMic: rs.some((r) => r && r.usedMic), usedSR: rs.some((r) => r && r.usedSR) };
+  };
+  if (teacher) return <Teacher />;
+  let view;
+  if (stage === "intro") view = <Intro name={name} setName={setName} onStart={async () => { stopSpeech(); if (mic.status === "unknown") await requestMic(); t0.current = Date.now(); setStage("reading"); }} />;
+  else if (stage === "reading") view = <Reading onDone={set("reading", "listening")} />;
+  else if (stage === "listening") view = <Listening onDone={set("listening", "writing")} />;
+  else if (stage === "writing") view = <Writing onDone={set("writing", "speaking")} />;
+  else if (stage === "speaking") view = <Speaking onDone={set("speaking", "submit")} />;
+  else view = <Submit data={data} name={name} getMeta={getMeta} />;
+  return <MicContext.Provider value={ctx}>{view}{endOpen && <EndModal onCancel={() => setEndOpen(false)} onConfirm={endTest} />}</MicContext.Provider>;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+</script>
+
+</body></html>
